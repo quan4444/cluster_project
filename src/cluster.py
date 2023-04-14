@@ -6,12 +6,16 @@ from skimage import measure, filters
 import copy
 
 def get_kmeans_label(x,n=2):
+    '''Normalize and perform k-mean clustering on a set of feature x.'''
+
     x = sklearn.preprocessing.normalize(x,axis=0)
     kmeans = KMeans(n_clusters = n, init = 'k-means++', max_iter = 300, n_init=10)
     kmeans.fit(x)
     return kmeans
 
 def arr_to_img(arr):
+    '''Convert array/label to image, ensuring the orientation of the label relative to the corresponding markers positions.'''
+
     n = len(arr)
     n_sqrt = int(np.sqrt(n))
     # setting order='F' and np.flipud to put the image into the matching orientation
@@ -21,14 +25,20 @@ def arr_to_img(arr):
     return img_arr
 
 def img_to_arr(img):
+    '''Convert image to array/label, ensuring the orientation of the label relative to the corresponding markers positions.'''
+
     arr = np.rot90(img,k=-1).flatten()
     return arr
 
 def label_by_position(img):
+    '''Segment all the pixels in an image using the skimage.measure.label function'''
+
     img_labeled = measure.label(img+1)
     return img_labeled
 
 def find_small_regions(img_labeled,thresh=5):
+    '''Find regions inside the image with the number of pixels lower than the threshold.'''
+
     # find regions with size below the threshold
     region_props = measure.regionprops(img_labeled)
     below_thresh_label=[]
@@ -40,6 +50,8 @@ def find_small_regions(img_labeled,thresh=5):
     return np.array(below_thresh_label)
 
 def set_small_regions_zero(img_labeled,below_thresh_label):
+    '''Set the values of the regions with size lower than the threshold to 0.'''
+
     has_zero = np.any(img_labeled == 0)
     if has_zero == True:
         img_labeled += 1
@@ -51,14 +63,20 @@ def set_small_regions_zero(img_labeled,below_thresh_label):
     return img_zero_regions,zero_idx
 
 def median_filter(img, filter_size=(3,3)):
+    '''Perform median filter on an image given image and filter size.'''
+
     filtered = filters.median(img,footprint=np.ones(filter_size))
     return filtered
 
 def replace_small_regions_vals(img,img_filtered):
+    '''Replace the values of the small regions in an image with the median filtered values.'''
+
     img[img==0] = img_filtered[img==0]
     return img
 
 def clean_tiny_clusters(img_labeled,thresh=5,filter_size=(5,5)):
+    '''Remove the small regions in an image with a median filter.'''
+
     below_thresh_label = find_small_regions(img_labeled,thresh=thresh)
     img_zero_regions,_ = set_small_regions_zero(img_labeled,below_thresh_label)
     img_filtered = median_filter(img_zero_regions,filter_size=filter_size)
@@ -67,6 +85,8 @@ def clean_tiny_clusters(img_labeled,thresh=5,filter_size=(5,5)):
     return final_img
 
 def segment_by_position(label,thresh=5,filter_size=(5,5)):
+    '''Segment the different clusters in an image by their position.'''
+
     img = arr_to_img(label)
     img_labeled = label_by_position(img)
     final_img = clean_tiny_clusters(img_labeled,thresh=thresh,filter_size=filter_size)
@@ -75,6 +95,8 @@ def segment_by_position(label,thresh=5,filter_size=(5,5)):
     return final_label
 
 def obtain_ind_in_clusters(labels):
+    '''Obtain the indices per cluster for all cluster.'''
+
     cluster=[]
     for unique_label in np.unique(labels):
         cluster.append(np.where(labels==unique_label)[0])
@@ -82,6 +104,7 @@ def obtain_ind_in_clusters(labels):
     return cluster
 
 def find_medoid_ind(feature,labels,markers=None,positional_medoid=False):
+    '''Find the medoid indices for all clusters given the feature and labels.'''
 
     if positional_medoid == False:
         feature_for_medoid = feature
@@ -102,6 +125,8 @@ def find_medoid_ind(feature,labels,markers=None,positional_medoid=False):
     return medoid_ind
 
 def get_medoid_val_by_sorted_labels(feature,medoids_ind,labels):
+    '''Obtain the feature for the medoids, given the medoids indices.'''
+
     medoids_labels = labels[medoids_ind]
     medoids_labels_and_medoids_ind = np.concatenate((medoids_labels.reshape(-1,1),medoids_ind.reshape(-1,1)),axis=1)
     medoids_ind_sorted = medoids_labels_and_medoids_ind[np.argsort(medoids_labels_and_medoids_ind[:,0]),1]
@@ -109,6 +134,9 @@ def get_medoid_val_by_sorted_labels(feature,medoids_ind,labels):
     return medoids_val_sorted
 
 def get_compressed_features_single(feature,labels,medoids_ind):
+    '''Obtain the compressed features for each cluster.
+    For each cluster, replace the feature values for all markers in the cluster with the feature values of the medoid.'''
+    
     feature_compressed = copy.deepcopy(feature)
     unique_labels = np.unique(labels)
     medoids_val_sorted = get_medoid_val_by_sorted_labels(feature,medoids_ind,labels)
@@ -119,6 +147,9 @@ def get_compressed_features_single(feature,labels,medoids_ind):
     return feature_compressed
 
 def get_compressed_features_multiple(features_all,labels,medoids_ind):
+    '''Obtain the compressed feature for multiple sets of labels and medoid indices.
+    For each cluster, replace the feature values for all markers in the cluster with the feature values of the medoid.'''
+    
     feature_compressed_all = ()
     for i in range(len(features_all)):
         feature = features_all[i]
@@ -128,10 +159,14 @@ def get_compressed_features_multiple(features_all,labels,medoids_ind):
     return feature_compressed_all
 
 def MSE(A,B,ax=0):
+    '''Mean squared error between 2 matrices.'''
+
     mse = (np.square(A - B)).mean(axis=ax)
     return mse
 
 def get_MSE_multiple(features,features_compressed_all):
+    '''Mean squared error for multiple sets of matrices'''
+
     MSE_all = []
     for i in range(len(features)):
         mse = MSE(features[i],features_compressed_all[i])
@@ -139,6 +174,10 @@ def get_MSE_multiple(features,features_compressed_all):
     return MSE_all
 
 def cluster_single_set(feature,k,thresh=5,filter_size=(5,5),segment=True,positional_medoid=False,only_cluster=False):
+    '''Perform the full clustering pipeline on a single set of features.
+    First, cluster the features using kmeans.
+    Then, convert the label to an image and perform image segmentation on the labels.'''
+    
     # kmeans clustering
     cluster_label = get_kmeans_label(feature,n=k).labels_
 
@@ -166,6 +205,8 @@ def cluster_single_set(feature,k,thresh=5,filter_size=(5,5),segment=True,positio
         return label_active,cluster_label,medoids_ind,feature_compressed,MSE_
     
 def cluster_sets(features_all,k=2,thresh=5,filter_size=(5,5),segment=True,positional_medoid=False):
+    '''Perform the clustering pipeline on multiple sets of features.'''
+
     cluster_results = []
     for i in range(len(features_all)):
         feature=features_all[i]
@@ -175,6 +216,8 @@ def cluster_sets(features_all,k=2,thresh=5,filter_size=(5,5),segment=True,positi
     return cluster_results
 
 def get_indicator_matrix(cluster_results):
+    '''Obtain the indicator matrix given multiple sets of labels.'''
+
     num_cluster_results,num_markers=cluster_results.shape
 
     shape1 = 0
@@ -197,6 +240,7 @@ def get_indicator_matrix(cluster_results):
     return indicator_mat,num_cluster_results
 
 def get_similarity_matrix(cluster_results):
+    '''Obtain the similarity matrix given multiple sets of labels.'''
 
     # convert to hypergraph
     indicator_mat,num_cluster_results=get_indicator_matrix(cluster_results)
@@ -207,6 +251,8 @@ def get_similarity_matrix(cluster_results):
     return S
 
 def cluster_similarity_matrix(S,k,thresh=5,filter_size=(5,5),segment=True):
+    '''Cluster the similarity matrix '''
+
     spectral = SpectralClustering(n_clusters=k,affinity='precomputed')
     spectral.fit(S)
     cluster_label = spectral.labels_
@@ -221,6 +267,8 @@ def cluster_similarity_matrix(S,k,thresh=5,filter_size=(5,5),segment=True):
     return label_active,cluster_label
 
 def cluster_full_pipeline(features_all,k,points_sel,thresh=5,filter_size=(5,5),segment=True,positional_medoid=False,only_label=False):
+    '''Cluster and segment multiple sets of features.'''
+    
     cluster_results = cluster_sets(features_all,k=k,\
                     thresh=thresh,filter_size=filter_size,segment=segment,positional_medoid=positional_medoid)
 
@@ -240,7 +288,7 @@ def cluster_full_pipeline(features_all,k,points_sel,thresh=5,filter_size=(5,5),s
         return cluster_results,naive_ensemble_label,ensemble_label
     
 def get_ground_truth(points,length=1,width=1,het_domain='circle'):
-    '''Obtain ground truth for heterogeneous domains'''
+    '''Obtain ground truth for heterogeneous domains.'''
     
     truth = []
     if het_domain == 'circle':
@@ -281,7 +329,7 @@ def get_ground_truth(points,length=1,width=1,het_domain='circle'):
     return truth
 
 def get_ARI_multiple(truth,labels):
-    '''Obtain ARI score for sets of labels given truth'''
+    '''Obtain ARI score for sets of labels given truth.'''
     
     if len(labels.shape) == 1:
         ARI_score = adjusted_rand_score(truth,labels)

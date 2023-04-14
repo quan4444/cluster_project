@@ -4,11 +4,15 @@ import copy
 import os
 
 def load_pt_disp(path,pt_loc_filename,u_mat_filename,markers_len=1000):
+    '''Load in positions and displacements of markers, given path and file.'''
+
     pt_loc = np.load(os.path.join(path,pt_loc_filename))[:markers_len,0:2]
     u_mat = np.load(os.path.join(path,u_mat_filename))[:markers_len,0:2]
     return pt_loc,u_mat
 
 def load_multiple(path,pt_filenames,u_filenames,markers_len=1000):
+    '''Load in positions and displacements of markers, for multiple files.'''
+
     pt_loc_all=[]
     u_mat_all=[]
     for i in range(len(pt_filenames)):
@@ -22,6 +26,8 @@ def load_multiple(path,pt_filenames,u_filenames,markers_len=1000):
     return pt_loc_all,u_mat_all
 
 def get_nn_mat(pt_loc,pt_sel):
+    '''Obtain nearest neighbor index matrix, given two matrices containing markers positions.'''
+
     # obtain distance matrix for point cloud
     D = spatial.distance_matrix(pt_sel,pt_loc)
     # sort distance matrix and obtain nearest neighbors
@@ -30,6 +36,7 @@ def get_nn_mat(pt_loc,pt_sel):
     return nn
 
 def get_displacement_grad(pt_loc,pt_sel,u_mat,num_neigh):
+    '''Obtain the displacements and displacement gradient for the grid markers by using b-spline interpolation.'''
 
     u_mat_int=[]
     grad_u=[]
@@ -63,6 +70,7 @@ def get_displacement_grad(pt_loc,pt_sel,u_mat,num_neigh):
     return u_mat_int,grad_u
 
 def get_strain(grad_u):
+    '''Obtain strain given the displacement gradient.'''
     grad_uT = copy.deepcopy(grad_u)
     grad_uT[:,[-2,-1]] = grad_u[:,[-1,-2]]
     strain = 0.5 * (grad_u + grad_uT)
@@ -70,6 +78,8 @@ def get_strain(grad_u):
 
 def get_invariants_of_tensor(tensor):
     '''
+    Obtain the invariants for a tensor.
+
     Tensor format as an array:
     tensor[i,0]: the 11 position in a tensor for marker i
     tensor[i,1]: the 22 position in a tensor for marker i
@@ -87,9 +97,13 @@ def get_invariants_of_tensor(tensor):
     return I
 
 def get_F(grad_u):
+    '''Obtain the deformation gradient given the displacement gradient.'''
+
     return grad_u+[1,1,0,0]
 
 def get_C(F):
+    '''Obtain the right Cauchy-Green tensor given the displacement gradient.'''
+
     C = [F[:,0]*F[:,0]+F[:,3]*F[:,3],
         F[:,2]*F[:,2]+F[:,1]*F[:,1],
         F[:,0]*F[:,2]+F[:,3]*F[:,1],
@@ -98,6 +112,8 @@ def get_C(F):
     return C
 
 def get_b(F):
+    '''Obtain the left Cauchy-Green tensor given the displacement gradient.'''
+
     b = [F[:,0]*F[:,0]+F[:,2]*F[:,2],
           F[:,3]*F[:,3]+F[:,1]*F[:,1],
           F[:,0]*F[:,3]+F[:,2]*F[:,1],
@@ -105,21 +121,24 @@ def get_b(F):
     b = np.transpose(np.array(b))
     return b
 
-def sample_points(pt_len,L):
+def sample_points(num_markers,L):
+    '''Obtain grid markers given number of markers and length of sample.'''
+    
     points_sel = []
 
     # pt_img_x = np.zeros((int(np.sqrt(pt_len)), int(np.sqrt(pt_len))))
     # pt_img_y = np.zeros((int(np.sqrt(pt_len)), int(np.sqrt(pt_len))))
-    pix_len = L/np.sqrt(pt_len)
-    for i in range(int(np.sqrt(pt_len))):
+    pix_len = L/np.sqrt(num_markers)
+    for i in range(int(np.sqrt(num_markers))):
         pos_x = pix_len*i
-        for j in range(int(np.sqrt(pt_len))):
+        for j in range(int(np.sqrt(num_markers))):
             pos_y = pix_len*j
             points_sel.append([pos_x,pos_y])
     points_sel = np.array(points_sel)
     return points_sel
 
 def get_kinematics_with_nn(pt_loc,pt_sel,u_mat,num_neigh):
+    '''Obtain all kinematics given the original markers positions, the grid markers positions, the original displacements, and the number of neighbor for interpolation.'''
 
     # displacement and displacement gradients at each marker via interpolation
     u_mat_int, grad_u = get_displacement_grad(pt_loc,pt_sel,u_mat,num_neigh)
@@ -151,6 +170,8 @@ def get_kinematics_with_nn(pt_loc,pt_sel,u_mat,num_neigh):
     return u_mat_int,grad_u,strain,I_strain,F,I_F,C,I_C,b,I_b
 
 def get_kinematics_multiple(pt_loc_all,u_mat_all,points_sel,num_neigh):
+    '''Obtain all kinematics for multiple sets of markers positions and displacements.'''
+    
     u_mat_list = ()
     grad_u_list = ()
     strain_list = ()
