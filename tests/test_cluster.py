@@ -6,9 +6,10 @@ import kinematics as kn
 
 def test_get_kmeans_label():
     feature = [[5,2],[0,1],[0,1],[6,1],[0,1],[5,2]]
-    known = np.array([0,1,1,0,1,0])
+    known1 = np.array([0,1,1,0,1,0])
+    known2 = np.array([1,0,0,1,0,1])
     found = cluster.get_kmeans_label(feature,n=2).labels_
-    assert np.allclose(known,found)
+    assert np.allclose(known1,found) or np.allclose(known2,found)
 
 def test_arr_to_img():
     arr = np.array([0,1,2,3])
@@ -116,7 +117,7 @@ def test_segment_by_position():
 
 def test_obtain_ind_in_clusters():
     labels = np.array([0,0,1,1,0,2,1,1,0,2,1,1,2,2,0])
-    known = np.array([np.array([0,1,4,8,14]),np.array([2,3,6,7,10,11]),np.array([5,9,12,13])])
+    known = np.array([np.array([0,1,4,8,14]),np.array([2,3,6,7,10,11]),np.array([5,9,12,13])],dtype=object)
     found = cluster.obtain_ind_in_clusters(labels)
     for i in range(len(known)):
         assert np.allclose(known[i],found[i])
@@ -214,21 +215,6 @@ def test_get_similarity_matrix():
     assert np.allclose(known,found)
 
 def test_cluster_similarity_matrix():
-    # S = np.array([[1,0.8,0.8,0.8,0,0,0,0,0],\
-    #               [0.8,1,0.8,0.8,0,0,0,0,0],\
-    #               [0.8,0.8,1,0.8,0,0,0,0,0],\
-    #               [0.8,0.8,0.8,1,0.7,0,0,0,0],\
-    #               [0,0,0,0.7,1,0,0,0,0],\
-    #               [0,0,0,0,0,1,0.8,0.8,0.8],\
-    #               [0,0,0,0,0,0.8,1,0.8,0.8],\
-    #               [0,0,0,0,0,0.8,0.8,1,0.8],\
-    #               [0,0,0,0,0,0.8,0.8,0.8,1]])
-    # known = np.array([1,1,1,1,1,2,2,2,2])
-    # S = np.zeros((16,16))
-    # S[0,1]=S[0,2]=S[0,3]=S[0,5]=S[0,6]=S[0,7]=S[0,9]=S[0,11]=S[0,12]=S[0,13]=S[0,15]=\
-    # S[1,0]=S[1,2]=S[1,3]=S[1,5]=S[1,6]=S[1,7]=S[1,9]=S[1,11]=S[1,12]=S[1,13]=S[1,15]=\
-    # S[2,0]=S[2,1]=S[2,3]=S[2,5]=S[2,6]=S[2,7]=S[2,9]=S[2,11]=S[2,12]=S[2,13]=S[2,15]=\
-    # S[3,0]=S[3,1]=S[3,3]=S[3,5]=S[3,6]=S[3,7]=S[3,9]=S[3,11]=S[3,12]=S[3,13]=S[3,15]=\
     label1 = np.array([1,1,1,1,2,1,1,1,2,1,2,1,1,1,2,1])
     label2 = np.array([1,1,1,1,2,1,1,1,2,1,2,1,1,1,2,1])
     labels = np.array([label1,label2])

@@ -23,12 +23,12 @@ disp_path = '/home/quan/phd/soft_square_stiff_circle/output_disp'
 # disp_type = np.array(['equibiaxial','shear','confined compression','uni x','uni y'])
 
 # # sssc / ho / background fibers point up / circular inclusion 45deg from x-axis
-pt_loc_files = np.array(['pt_sssc_HO_bgup_45_unid_y_x00.2_xf0.2_y00.0_yf0.0_rank0.npy',\
-                        'pt_sssc_HO_bgup_45_unid_x00.0_xf0.0_y00.2_yf0.2_rank0.npy'])
-u_mat_files = np.array(['disp_sssc_HO_bgup_45_unid_y_x00.2_xf0.2_y00.0_yf0.0_rank0.npy',\
-                            'disp_sssc_HO_bgup_45_unid_x00.0_xf0.0_y00.2_yf0.2_rank0.npy'])
-pt_loc_all,u_mat_all = kn.load_multiple(disp_path,pt_loc_files,u_mat_files)
-disp_type = np.array(['confined uni x','confined uni y'])
+# pt_loc_files = np.array(['pt_sssc_HO_bgup_45_unid_y_x00.2_xf0.2_y00.0_yf0.0_rank0.npy',\
+#                         'pt_sssc_HO_bgup_45_unid_x00.0_xf0.0_y00.2_yf0.2_rank0.npy'])
+# u_mat_files = np.array(['disp_sssc_HO_bgup_45_unid_y_x00.2_xf0.2_y00.0_yf0.0_rank0.npy',\
+#                             'disp_sssc_HO_bgup_45_unid_x00.0_xf0.0_y00.2_yf0.2_rank0.npy'])
+# pt_loc_all,u_mat_all = kn.load_multiple(disp_path,pt_loc_files,u_mat_files)
+# disp_type = np.array(['confined uni x','confined uni y'])
 
 # sssc / ho / background fibers along x-axis / circular inclusion 45deg from x-axis
 pt_loc_files = np.array(['pt_sssc_HO_45_equi_x00.2_xf0.2_y00.2_yf0.2_rank0.npy',\
