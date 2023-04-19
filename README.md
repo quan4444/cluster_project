@@ -1,16 +1,27 @@
-# cluster project
+## Cluster project
 
-# This repository corresponds with the paper: <paper name> + <hyper-link>
+This GitHub repository contains a folder called ``tutorials`` that contains two examples, one for running the clustering pipeline on the homogeneous sample for sensors placement, and one for running the clustering pipeline on the heterogeneous samples to identify the different domains. To run the tutorials, change your current working directory to the ``tutorials`` folder.
 
-# The below code is for clustering a homogenous domain 
+### Preparing data for analysis
+The data will be contained in the ``files/example_data/output_disp`` folder. Critically:
+1. The files must have a ``'.npy'`` extension.
+2. The files with name starting with ``'pt_'`` must contain the 2D or 3D locations of the markers.
+3. The files with the name starting with ``'disp_'`` must contain the 2D or 3D displacements of the markers, corresponding to the files in 2.
 
+Here is how the folders will be structured:
+```bash
+|___ example_folder
+|	|___ output_disp
+|		|___ 'pt_example1.npy'
+|		|___ 'disp_example1.npy'
+```
+
+Here, we will import the necessary packages. We will also load an array ``pt_loc`` storing random markers location, and the corresponding displacements array ``u_mat``. We will use the function ``sample_points`` to sample an array of grid markers ``points_sel``.
+
+```bash
 import numpy as np
-import sys
-sys.path.append(path)
-
-import kinematics as kn
-import cluster
-import plotting
+from cluster_project import kinematics as kn
+from cluster_project import cluster, plotting
 
 # user inputs for size of sample
 length_samp = 1
@@ -27,14 +38,31 @@ disp_type = np.array(['equibiaxial','uniaxial y','uniaxial x','shear'])
 # generate grid markers
 pt_len = 8000
 points_sel = kn.sample_points(pt_len,L=length_samp)
+```
 
+### Current core functionality
+
+In this tutorial, there are _ core functionalities available.
+
+#### Kinematics calculations
+
+The function ``get_kinematics_with_nn`` will take in ``pt_loc``, ``u_mat``, and ``pt_sel``, and generate multiple array of kinematics (e.g., ``F``, ``invariants``) for the corresponding grid markers ``pt_sel``.
+
+```bash
 # obtain kinematics at grid markers for each file
 num_neigh=40
 
-_,_,strain_list,I_strain_list,_,_,_,I_C_list,_,_ = kn.get_kinematics_multiple(pt_loc_all,u_mat_all,points_sel,num_neigh)
+u_mat_list,grad_u_list,strain_list,I_strain_list,F_list,I_F_list,C_list,I_C_list,b_list,I_b_list = kn.get_kinematics_multiple(pt_loc_all,u_mat_all,points_sel,num_neigh)
+```
 
+#### Clustering the domain
+
+First, we select the feature we want to use for clustering (e.g., ``features_all = strain_list``). The function ``cluster_full_pipelines`` will take in the features ``features_all``, the number of clusters ``k``, and the grid markers ``points_sel``, and will output the ``cluster_results``. 
+In the example below, we run multiple loops of ...
+
+```bash
 # cluster sets
-features_all = I_C_list
+features_all = strain_list
 highest_k = 3
 thresh = 5
 filter_size = (5,5)
@@ -57,15 +85,6 @@ for i in range(len(k_list)):
 	medoids_ind_list.append(medoids_ind)
 	feature_compressed_list = feature_compressed_list + (features_compressed_all,)
 	MSE_vs_k_features.append(MSE_all)
-
-	if k_list[i] == 2 or k_list[i] % 10 == 0:
-		plotting.plot_cluster_by_bcs(disp_type,cluster_results,points_sel,big_title='boundary conditions')
-		plotting.plot_cluster(naive_ensemble_label,points_sel,title_extra=' (naive)')
-		plotting.plot_cluster(ensemble_label,points_sel,title_extra=' (segmented)')
-		plotting.plot_centroids_on_clusters(medoids_ind,points_sel,ensemble_label)
 medoids_ind_list = np.array(medoids_ind_list,dtype=object)
 MSE_vs_k_features = np.array(MSE_vs_k_features)
-
-plotting.plot_MSE_multiple(k_list,MSE_vs_k_features,disp_type,big_title='MSE vs. k',x_axis_label='k')
-num_sensors = [len(array) for array in medoids_ind_list]
-plotting.plot_MSE_multiple(num_sensors,MSE_vs_k_features,disp_type,big_title='MSE vs. num sensors',x_axis_label='num sensors',scatter_plot=True)
+```
