@@ -28,3 +28,15 @@ jobs:
     - name: Test with pytest
       run: |
         pytest -v
+    - name: Generate coverage report
+      run: |
+        pytest --cov=cluster_project --cov-report=xml
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrests.CODECOV_TOKEN }} # not required for public repos
+        files: ./coverage.xml
+        flags: pytest
+        name: cluster_project
+        fail_ci_if_error: true
+        verbose: true
