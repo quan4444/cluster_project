@@ -1,4 +1,12 @@
-## Cluster project
+# Cluster project
+
+[![python](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/)
+![os](https://img.shields.io/badge/os-ubuntu%20|%20macos%20|%20windows-blue.svg)
+[![license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/sandialabs/sibl#license)
+
+[![tests](https://github.com/elejeune11/microbundlecompute-lite/workflows/tests/badge.svg)](https://github.com/quan4444/cluster_project/actions)
+
+## Tutorials
 
 This GitHub repository contains a folder called ``tutorials`` that contains two examples, one for running the clustering pipeline on the homogeneous sample for sensors placement, and one for running the clustering pipeline on the heterogeneous samples to identify the different material domains. To run the tutorials, change your current working directory to the ``tutorials`` folder.
 
