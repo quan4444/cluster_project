@@ -96,7 +96,7 @@ def test_get_kinematics_with_nn():
     pass
 
 def test_get_kinematics_multiple():
-    disp_path = '/home/quan/phd/soft_square_stiff_circle/output_disp'
+    disp_path = 'tests/files/test_data/'
     pt_loc_filenames = np.array(['pt_homog_uni_y_disp0.4.npy','pt_homog_uni_y_disp0.4.npy'])
     u_mat_filenames = np.array(['disp_homog_uni_y_disp0.4.npy','disp_homog_uni_y_disp0.4.npy'])
     pt_loc_all,u_mat_all = kn.load_multiple(disp_path,pt_loc_filenames,u_mat_filenames)
