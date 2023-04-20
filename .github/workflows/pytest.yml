@@ -34,7 +34,8 @@ jobs:
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
-        token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+        # token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+        token: ${{ W3LXJTOCY8 }}
         files: ./coverage.xml
         flags: pytest
         name: cluster_project
