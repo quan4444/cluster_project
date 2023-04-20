@@ -87,7 +87,7 @@ First, we select the feature we want to use for clustering (e.g., ``features_all
 - ``features_compressed_all`: The compressed features for all the boundary conditions. For each cluster, the compressed features are obtained by replacing the features of the medoid with all the markers in the cluster. The array has a shape m by n by dim, where m is the number of boundary conditions, n the number of grid markers, and dim the dimensions of the features.
 - ``MSE_all``: the mean squared value between the ``features_compressed_all`` and the ``features_all``. The array has a shape m by 1, which each value corresponds to the MSE between the compressed features and the actual features for a set of boundary conditions constraints.
 
-In the example below, we run multiple loops of our clustering pipeline, increasing the number of clusters ``k`` between loop. The goal is to find the *convergence* numbers of clusters ``k``. We store the data in an array for plotting later.
+In the example below, we run multiple loops of our clustering pipeline, increasing the number of clusters ``k`` between loop. The for loop will run from ``k=2`` to ``k=highest_k``, where ``highest_k`` is the highest value of k predetermined by the user. The goal is to find the *convergence* numbers of clusters ``k``. We store the data in an array for plotting later.
 
 ```python3
 # cluster sets
