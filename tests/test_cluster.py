@@ -1,8 +1,6 @@
 import numpy as np
-import sys
-sys.path.append('/home/quan/phd/cluster_project/src')
-import cluster
-import kinematics as kn
+from cluster_project import cluster
+from cluster_project import kinematics as kn
 
 def test_get_kmeans_label():
     feature = [[5,2],[0,1],[0,1],[6,1],[0,1],[5,2]]

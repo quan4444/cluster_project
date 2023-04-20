@@ -65,7 +65,7 @@ def set_small_regions_zero(img_labeled,below_thresh_label):
 def median_filter(img, filter_size=(3,3)):
     '''Perform median filter on an image given image and filter size.'''
 
-    filtered = filters.median(img,selem=np.ones(filter_size))
+    filtered = filters.median(img,footprint=np.ones(filter_size))
     return filtered
 
 def replace_small_regions_vals(img,img_filtered):

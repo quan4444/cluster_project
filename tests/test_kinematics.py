@@ -1,12 +1,12 @@
 import numpy as np
-import sys
-sys.path.append('/home/quan/phd/cluster_project/src')
 import os
-import kinematics as kn
+from cluster_project import kinematics as kn
 from sklearn.model_selection import train_test_split
+import pathlib
+pathlib.Path().resolve()
 
 def test_load_pt_disp():
-    disp_path = '/home/quan/phd/soft_square_stiff_circle/output_disp'
+    disp_path = 'tests/files/test_data/'
     pt_loc_filename = 'pt_homog_uni_y_disp0.4.npy'
     u_mat_filename = 'disp_homog_uni_y_disp0.4.npy'
     pt_loc,u_mat = kn.load_pt_disp(disp_path,pt_loc_filename,u_mat_filename)
@@ -14,7 +14,7 @@ def test_load_pt_disp():
     assert u_mat.shape == (1000,2)
 
 def test_load_multiple():
-    disp_path = '/home/quan/phd/soft_square_stiff_circle/output_disp'
+    disp_path = 'tests/files/test_data/'
     pt_loc_filenames = np.array(['pt_homog_uni_y_disp0.4.npy','pt_homog_uni_y_disp0.4.npy'])
     u_mat_filenames = np.array(['disp_homog_uni_y_disp0.4.npy','disp_homog_uni_y_disp0.4.npy'])
     pt_loc_all,u_mat_all = kn.load_multiple(disp_path,pt_loc_filenames,u_mat_filenames)
@@ -30,7 +30,7 @@ def test_get_nn_mat():
 
 def test_get_displacement_grad():
 
-    disp_path = '/home/quan/phd/soft_square_stiff_circle/output_disp'
+    disp_path = 'tests/files/test_data/'
     # points locations
     pt_loc = np.load(os.path.join(disp_path,'pt_homog_uni_y_disp0.4.npy'))[:,0:2]
     # displacement values

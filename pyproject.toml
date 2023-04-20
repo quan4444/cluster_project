@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cluster_project"
+version = "0.0.0"
+authors = [
+  { name="Quan Nguyen", email="quannguyen0520@gmail.com" },
+]
+description = "cluster project workflow"
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+  "matplotlib==3.7.1",
+  "numpy==1.24.2",
+  "scikit-image==0.20.0",
+  "scikit-learn==1.2.0",
+  "scipy==1.9.1"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/quan4444/cluster_project"
+"Bug Tracker" = "https://github.com/quan4444/cluster_project/issues"

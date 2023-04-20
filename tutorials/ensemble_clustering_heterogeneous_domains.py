@@ -1,10 +1,6 @@
 import numpy as np
-import sys
-sys.path.append('/home/quan/phd/cluster_project/src')
-
-import kinematics as kn
-import cluster
-import plotting
+from cluster_project import kinematics as kn
+from cluster_project import cluster, plotting
 
 # user inputs for size of sample
 length_samp = 1

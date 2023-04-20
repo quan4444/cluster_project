@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from cluster import arr_to_img
+from cluster_project.cluster import arr_to_img
 
 # untested ----------------------------------------
 def plot_og_compressed_img(cat_flat,cat_flat_compressed,k,mse):

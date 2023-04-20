@@ -1,16 +1,12 @@
 import numpy as np
-import sys
-sys.path.append('/home/quan/phd/cluster_project/src')
-
-import kinematics as kn
-import cluster
-import plotting
+from cluster_project import kinematics as kn
+from cluster_project import cluster, plotting
 
 # user inputs for size of sample
 length_samp = 1
 
 # load markers positions and displacements
-disp_path = '/home/quan/phd/soft_square_stiff_circle/output_disp'
+disp_path = 'files/example_data/'
 pt_loc_files = np.array(['pt_homog_equi_disp0.4.npy','pt_homog_uni_y_disp0.4.npy',\
                         'pt_homog_uni_x_disp0.4.npy','pt_homog_shear_yf0.1.npy'])
 u_mat_files = np.array(['disp_homog_equi_disp0.4.npy','disp_homog_uni_y_disp0.4.npy',\
