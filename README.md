@@ -5,6 +5,7 @@
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/sandialabs/sibl#license)
 
 [![tests](https://github.com/elejeune11/microbundlecompute-lite/workflows/tests/badge.svg)](https://github.com/quan4444/cluster_project/actions)
+[![codecov](https://codecov.io/gh/quan4444/cluster_project/branch/master/graph/badge.svg?token=W3LXJTOCY8)](https://codecov.io/gh/quan4444/cluster_project)
 
 ## Tutorials
 
