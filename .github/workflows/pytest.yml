@@ -35,7 +35,7 @@ jobs:
       uses: codecov/codecov-action@v3
       with:
         # token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-        token: ${{ TEMP_SECRET.CODECOV_TOKEN }}
+        token: ${{ secrets.TEMP_SECRET }}
         files: ./coverage.xml
         flags: pytest
         name: cluster_project
