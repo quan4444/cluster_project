@@ -46,21 +46,21 @@ points_sel = kn.sample_points(pt_len,L=length_samp)
 
 ### Current core functionality
 
-In this tutorial, there are _ core functionalities available.
+In this tutorial, there are 2 core functionalities available.
 
 #### Kinematics calculations
 
-The function ``get_kinematics_with_nn`` will take in the random markers ``pt_loc_all``, the displacements ``u_mat_all``, the grid markers ``points_sel``, and the number of neighbors ``num_neigh``, and *generate multiple array of kinematics* (e.g., ``F_list``, ``I_F_list``) for the corresponding grid markers ``points_sel``. Here, ``num_neigh`` is the number of nearest neighbor used to interpolate the displacement gradients for the grid markers. The output of the code contains multiple arrays of kinematics, each with dimensions m by n by dim, where m is the number of boundary conditions, n the number of markers, and dim the dimensions of the kinematics. The detail of the kinematics is as follow:
-- ``u_mat_list``: the displacements of the grid markers with dimensions m by n by dim, where ``dim=2`` and ``u_mat_list[:,:,0]`` is the displacements in x, and ``u_mat_list[:,:,1]`` the displacements in y.
-- ``grad_u_list``: the gradient of the displacements of the grid markers with dimensions m by n by dim, where ``dim=4``. grad_u11, grad_u22, grad_u12, and grad_u21 correspond to ``grad_u_list[:,:,0]``,``grad_u_list[:,:,1]``, ``grad_u_list[:,:,2]``, and ``grad_u_list[:,:,3]``, respectively.
-- ``strain_list``: the strain of the grid markers with dimensions m by n by dim, where ``dim=4``. strain11, strain22, strain12, and strain21 correspond to ``strain_list[:,:,0]``,``strain_list[:,:,1]``, ``strain_list[:,:,2]``, and ``strain_list[:,:,3]``, respectively.
-- ``I_strain_list``: the invariants of strain of the grid markers with dimensions m by n by dim, where ``dim=2``. The first invariant and second invariant of strain correspond to ``I_strain_list[:,:,0]``, and ``I_strain_list[:,:,2]``, respectively.
-- ``F_list``: the deformation gradient of the grid markers with dimensions m by n by dim, where ``dim=4``. F11, F22, F12, and F21 correspond to ``F_list[:,:,0]``,``F_list[:,:,1]``, ``F_list[:,:,2]``, and ``F_list[:,:,3]``, respectively.
-- ``I_F_list``: the invariants of the deformation gradient of the grid markers with dimensions m by n by dim, where ``dim=2``. The first invariant and second invariant of the deformation gradient correspond to ``I_F_list[:,:,0]``, and ``I_F_list[:,:,2]``, respectively.
-- ``C_list``: the right Cauchy-Green of the grid markers with dimensions m by n by dim, where ``dim=4``. C11, C22, C12, and C21 correspond to ``C_list[:,:,0]``,``C_list[:,:,1]``, ``C_list[:,:,2]``, and ``C_list[:,:,3]``, respectively.
-- ``I_C_list``: the invariants of the right Cauchy-Green of the grid markers with dimensions m by n by dim, where ``dim=2``. The first invariant and second invariant of the right Cauchy-Green correspond to ``I_C_list[:,:,0]``, and ``I_C_list[:,:,2]``, respectively.
-- ``b_list``: the left Cauchy-Green of the grid markers with dimensions m by n by dim, where ``dim=4``. b11, b22, b12, and b21 correspond to ``b_list[:,:,0]``,``b_list[:,:,1]``, ``b_list[:,:,2]``, and ``b_list[:,:,3]``, respectively.
-- ``I_b_list``: the invariants of the left Cauchy-Green of the grid markers with dimensions m by n by dim, where ``dim=2``. The first invariant and second invariant of the left Cauchy-Green correspond to ``I_b_list[:,:,0]``, and ``I_b_list[:,:,2]``, respectively.
+The function ``get_kinematics_with_nn`` will take in the random markers ``pt_loc_all``, the displacements ``u_mat_all``, the grid markers ``points_sel``, and the number of neighbors ``num_neigh``, and *generate multiple array of kinematics* (e.g., strain ``strain_list``, deformation gradient ``F_list``) for the corresponding grid markers ``points_sel``. Here, ``num_neigh`` is the number of nearest neighbor used to interpolate the displacement gradients for the grid markers. The output of the code contains multiple arrays of kinematics, each with shape of m by n by dim, where m is the number of boundary conditions, n the number of markers, and dim the dimensions of the kinematics. The detail of the kinematics is as follow:
+- ``u_mat_list``: the displacements of the grid markers with shape of m by n by dim, where ``dim=2`` and ``u_mat_list[:,:,0]`` is the displacements in x, and ``u_mat_list[:,:,1]`` the displacements in y.
+- ``grad_u_list``: the gradient of the displacements of the grid markers with shape of m by n by dim, where ``dim=4``. grad_u11, grad_u22, grad_u12, and grad_u21 correspond to ``grad_u_list[:,:,0]``,``grad_u_list[:,:,1]``, ``grad_u_list[:,:,2]``, and ``grad_u_list[:,:,3]``, respectively.
+- ``strain_list``: the strain of the grid markers with shape of m by n by dim, where ``dim=4``. strain11, strain22, strain12, and strain21 correspond to ``strain_list[:,:,0]``,``strain_list[:,:,1]``, ``strain_list[:,:,2]``, and ``strain_list[:,:,3]``, respectively.
+- ``I_strain_list``: the invariants of strain of the grid markers with shape of m by n by dim, where ``dim=2``. The first invariant and second invariant of strain correspond to ``I_strain_list[:,:,0]``, and ``I_strain_list[:,:,2]``, respectively.
+- ``F_list``: the deformation gradient of the grid markers with shape of m by n by dim, where ``dim=4``. F11, F22, F12, and F21 correspond to ``F_list[:,:,0]``,``F_list[:,:,1]``, ``F_list[:,:,2]``, and ``F_list[:,:,3]``, respectively.
+- ``I_F_list``: the invariants of the deformation gradient of the grid markers with shape of m by n by dim, where ``dim=2``. The first invariant and second invariant of the deformation gradient correspond to ``I_F_list[:,:,0]``, and ``I_F_list[:,:,2]``, respectively.
+- ``C_list``: the right Cauchy-Green of the grid markers with shape of m by n by dim, where ``dim=4``. C11, C22, C12, and C21 correspond to ``C_list[:,:,0]``,``C_list[:,:,1]``, ``C_list[:,:,2]``, and ``C_list[:,:,3]``, respectively.
+- ``I_C_list``: the invariants of the right Cauchy-Green of the grid markers with shape of m by n by dim, where ``dim=2``. The first invariant and second invariant of the right Cauchy-Green correspond to ``I_C_list[:,:,0]``, and ``I_C_list[:,:,2]``, respectively.
+- ``b_list``: the left Cauchy-Green of the grid markers with shape of m by n by dim, where ``dim=4``. b11, b22, b12, and b21 correspond to ``b_list[:,:,0]``,``b_list[:,:,1]``, ``b_list[:,:,2]``, and ``b_list[:,:,3]``, respectively.
+- ``I_b_list``: the invariants of the left Cauchy-Green of the grid markers with shape of m by n by dim, where ``dim=2``. The first invariant and second invariant of the left Cauchy-Green correspond to ``I_b_list[:,:,0]``, and ``I_b_list[:,:,2]``, respectively.
 
 ```python3
 # obtain kinematics at grid markers for each file
@@ -71,13 +71,20 @@ u_mat_list,grad_u_list,strain_list,I_strain_list,F_list,I_F_list,C_list,I_C_list
 
 #### Clustering the domain
 
-First, we select the feature we want to use for clustering (e.g., ``features_all = strain_list``). The function ``cluster_full_pipelines`` will take in the features ``features_all``, the number of clusters ``k``, and the grid markers ``points_sel``, and will output the ``cluster_results``. 
-In the example below, we run multiple loops of ...
+First, we select the feature we want to use for clustering (e.g., ``features_all = strain_list``). The function ``cluster_full_pipelines`` will take in ``features_all``, the number of clusters ``k``, and the grid markers ``points_sel``, and will output the clustering results and other variables useful for analysis, which will be discussed below.
+- ``cluster_results``: the clustering results for the individual boundary conditions, with shape of m by n, where m is the number of boundary conditions, and n the number of grid markers. The values of the array correspond to the label of the markers.
+- ``naive_ensemble_label``: the clustering result for the ensemble, obtained AFTER clustering the affinity matrix with Spectral clustering, but BEFORE the segmentation by position step. The array has the shape n by 1.
+- ``ensemble_label``: the clustering result for the ensemble, obtain after the segmentation by position step. The array has the shape n by 1.
+- ``medoids_ind``: the indices (``points_sel``) of the medoids for the clusters in ``ensemble_label``. Each cluster has 1 medoid.
+- ``features_compressed_all`: The compressed features for all the boundary conditions. For each cluster, the compressed features are obtained by replacing the features of the medoid with all the markers in the cluster. The array has a shape m by n by dim, where m is the number of boundary conditions, n the number of grid markers, and dim the dimensions of the features.
+- ``MSE_all``: the mean squared value between the ``features_compressed_all`` and the ``features_all``. The array has a shape m by 1, which each value corresponds to the MSE between the compressed features and the actual features for a set of boundary conditions constraints.
+
+In the example below, we run multiple loops of our clustering pipeline, increasing the number of clusters ``k`` between loop. The goal is to find the *convergence* numbers of clusters ``k``. We store the data in an array for plotting later.
 
 ```python3
 # cluster sets
 features_all = strain_list
-highest_k = 3
+highest_k = 30
 thresh = 5
 filter_size = (5,5)
 segment = True
