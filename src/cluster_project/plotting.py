@@ -90,9 +90,9 @@ def plot_MSE_multiple(x_ax,MSE_,disp_type,big_title='MSE vs. k',x_axis_label='k'
     count=0
     for i in range(col):
         if scatter_plot==False:
-            ax[i].plot(x_ax[:len(MSE_)],MSE_[:,i])
+            ax[i].plot(x_ax[:len(MSE_)],MSE_[:,count])
         elif scatter_plot==True:
-            ax[i].scatter(x_ax[:len(MSE_)],MSE_[:,i])
+            ax[i].scatter(x_ax[:len(MSE_)],MSE_[:,count])
 
         ax[i].set_title(disp_type[count],fontsize=15)
         ax[i].set(xlabel=x_axis_label, ylabel='MSE')

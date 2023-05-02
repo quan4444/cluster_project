@@ -130,7 +130,7 @@ def get_medoid_val_by_sorted_labels(feature,medoids_ind,labels):
     medoids_labels = labels[medoids_ind]
     medoids_labels_and_medoids_ind = np.concatenate((medoids_labels.reshape(-1,1),medoids_ind.reshape(-1,1)),axis=1)
     medoids_ind_sorted = medoids_labels_and_medoids_ind[np.argsort(medoids_labels_and_medoids_ind[:,0]),1]
-    medoids_val_sorted = feature[medoids_ind_sorted,:]
+    medoids_val_sorted = feature[medoids_ind_sorted.astype(int),:]
     return medoids_val_sorted
 
 def get_compressed_features_single(feature,labels,medoids_ind):

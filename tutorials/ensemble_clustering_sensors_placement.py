@@ -24,8 +24,8 @@ num_neigh=40
 _,_,strain_list,I_strain_list,_,_,_,I_C_list,_,_ = kn.get_kinematics_multiple(pt_loc_all,u_mat_all,points_sel,num_neigh)
 
 # cluster sets
-features_all = I_C_list
-highest_k = 3
+features_all = strain_list
+highest_k = 30
 thresh = 5
 filter_size = (5,5)
 segment = True
@@ -35,6 +35,7 @@ k_list = np.linspace(2,highest_k,highest_k-1,dtype=int)
 medoids_ind_list = []
 feature_compressed_list=()
 MSE_vs_k_features=[]
+ensemble_label_list = []
 for i in range(len(k_list)):
 
 	k_ = k_list[i]
@@ -47,6 +48,7 @@ for i in range(len(k_list)):
 	medoids_ind_list.append(medoids_ind)
 	feature_compressed_list = feature_compressed_list + (features_compressed_all,)
 	MSE_vs_k_features.append(MSE_all)
+	ensemble_label_list.append(ensemble_label)
 
 	if k_list[i] == 2 or k_list[i] % 10 == 0:
 		plotting.plot_cluster_by_bcs(disp_type,cluster_results,points_sel,big_title='boundary conditions')
@@ -55,6 +57,7 @@ for i in range(len(k_list)):
 		plotting.plot_centroids_on_clusters(medoids_ind,points_sel,ensemble_label)
 medoids_ind_list = np.array(medoids_ind_list,dtype=object)
 MSE_vs_k_features = np.array(MSE_vs_k_features)
+ensemble_label_list = np.array(ensemble_label_list)
 
 plotting.plot_MSE_multiple(k_list,MSE_vs_k_features,disp_type,big_title='MSE vs. k',x_axis_label='k')
 num_sensors = [len(array) for array in medoids_ind_list]
