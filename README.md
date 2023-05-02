@@ -7,11 +7,57 @@
 [![tests](https://github.com/elejeune11/microbundlecompute-lite/workflows/tests/badge.svg)](https://github.com/quan4444/cluster_project/actions)
 [![codecov](https://codecov.io/gh/quan4444/cluster_project/branch/master/graph/badge.svg?token=W3LXJTOCY8)](https://codecov.io/gh/quan4444/cluster_project)
 
-## Tutorials
+## Table of contents
+
+* [Project Background and Summary](#summary)
+* [Project Pipeline](#pipeline)
+* [Tutorials](#tutorial)
+
+## Project Background and Summary <a name="summary"></a>
+
+The goal of this project is to cluster a domain into several sub-domains using the mechanical and positional information available. Broadly speaking, a domain can represent many physical world objects, such as a soft robot or a sample of tissue. We developed a clustering pipeline with 2 main applications in mind:
+- Clustering a soft robot into different sub-domains for sensors placement.
+- Clustering a heterogeneous soft tissue into mechanically homogeneous sub-domains.
+Before explaining the full pipeline, we will introduce some concepts as background. Readers familiar with continuum mechanics and unsupervised machine learning can skip the rest of this section.
+
+### Markers on Domain
+
+In this project, we have a 3D domain with size 1 by 1 by 0.05. As we perform mechanical extensions (e.g., equibiaxial extension, uniaxial extension) on the domain, we can track its movements with randomly sampled markers at the surface of the domain. In many applications, we can use digital markers (e.g., Digital Image Correlation) or physical markers (e.g., hair follicles, skin pores) to track the deformations of the objects.
+
+**add image for randomly sampled markers and domain here**
+
+### Kinematics
+
+Briefly, [Kinematics](https://en.wikipedia.org/wiki/Kinematics) is a field of study describing the motion of objects and markers. In this project, we will use the following kinematics (from [continuum mechanics](http://www.continuummechanics.org/)): displacement $u$, displacement gradient $\nabla u$, strain $E$, deformation gradient $F$, right Cauchy-Green $C$, left Cauchy-Green $b$, and invariants $I$.
+
+### Unsupervised Learning/Clustering
+
+In machine learning, [unsupervised learning](https://en.wikipedia.org/wiki/Unsupervised_learning) methods try to identify patterns within the data given no labels. Here, we use 2 common methods: [K-means Clustering](https://en.wikipedia.org/wiki/K-means_clustering), and [Spectral Clustering](https://en.wikipedia.org/wiki/Spectral_clustering). Due to the lack of labels, unsupervised learning methods cannot utilize more accepted error metrics (e.g., mean squared error), which would require labels or a ground truth. This has led to the development of [clustering performance evaluation metrics](https://scikit-learn.org/stable/modules/clustering.html#clustering-performance-evaluation) to try and assess the performance of the methods.
+
+### Ensemble Clustering
+
+In many applications, we cannot determine the correctness of our unsupervised learning methods. However, we might be able to obtain different clustering results via different methods, or via different scenarios. Here, we can use [Ensemble Clustering](https://en.wikipedia.org/wiki/Consensus_clustering) to aggregate all the clustering results and obtain a final consensus result.
+
+## Project Pipeline <a name="pipeline"></a>
+
+The general pipeline is as follow:
+
+`Select a domain with a corresponding heterogeneous pattern` $\mapsto$ `Select constitutive model(s)` $\mapsto$ `Select a boundary condition` $\mapsto\$ `Generate displacements markers` $\mapsto$ `Calculate kinematics for markers` $\mapsto$ `Cluster markers to find sub-domains`
+
+The following section will describe the details for our clustering pipeline
+
+### Clustering pipeline
+
+From `Calculate kinematics for markers`, we will obtain the sets of kinematics for different boundary conditions. Then, we can follow our clustering pipeline to identify the sub-domains:
+
+**image for clustering pipeline**
+
+## Tutorials <a name="tutorial"></a>
 
 This GitHub repository contains a folder called ``tutorials`` that contains two examples, one for running the clustering pipeline on the homogeneous sample for sensors placement, and one for running the clustering pipeline on the heterogeneous samples to identify the different material domains. To run the tutorials, change your current working directory to the ``tutorials`` folder.
 
 ### Preparing data for analysis
+
 The data will be contained in the ``files/example_data/`` folder. Critically:
 1. The files must have a ``'.npy'`` extension.
 2. The files with name starting with ``'pt_'`` must contain the 2D or 3D locations of the markers.
