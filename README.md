@@ -139,7 +139,7 @@ First, we select the feature we want to use for clustering (e.g., ``features_all
 - ``naive_ensemble_label``: the clustering result for the ensemble, obtained AFTER clustering the affinity matrix with Spectral clustering, but BEFORE the segmentation by position step. The array has the shape n by 1.
 - ``ensemble_label``: the clustering result for the ensemble, obtain after the segmentation by position step. The array has the shape n by 1.
 
-In the example below, we cluster a heterogeneous sample depicting a circular inclusion with a neo-Hookean constitutive model. The 5 different sets of kinematics features are generated from 5 boundary conditions: equibiaxial extension, uniaxial extension in the x-direction, uniaxial extension in the y-direction, shear, and confined compression. In the next section, we will look at the results of our clustering pipeline.
+In the example below, we cluster a heterogeneous sample depicting a circular inclusion with a neo-Hookean constitutive model. The 5 different sets of kinematics features are generated from 5 boundary conditions: equibiaxial extension, uniaxial extension in the x-direction, uniaxial extension in the y-direction, shear, and confined compression. The full script can be found in ``tutorials/ensemble_clustering_heterogeneous_domains.py``. In the next section, we will look at the results of our clustering pipeline.
 
 ```python3
 # cluster sets
