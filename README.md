@@ -47,10 +47,9 @@ The general pipeline is as follow:
 
 The following section will describe the details for our clustering pipeline
 
-### Clustering pipeline
+#### Clustering pipeline
 
 From `Calculate kinematics features for each set of markers`, we will obtain the sets of kinematics for different boundary conditions. Then, we can follow our clustering pipeline to identify the sub-domains:
-
 
 <p align = "center">
 <img alt="clustering_pipeline" src="tutorials/figs_for_github/minimalist_pipeline.png" width="85%" />
@@ -139,7 +138,7 @@ First, we select the feature we want to use for clustering (e.g., ``features_all
 - ``naive_ensemble_label``: the clustering result for the ensemble, obtained AFTER clustering the affinity matrix with Spectral clustering, but BEFORE the segmentation by position step. The array has the shape n by 1.
 - ``ensemble_label``: the clustering result for the ensemble, obtain after the segmentation by position step. The array has the shape n by 1.
 
-In the example below, we cluster a heterogeneous sample depicting a circular inclusion with a neo-Hookean constitutive model. The 5 different sets of kinematics features are generated from 5 boundary conditions: equibiaxial extension, uniaxial extension in the x-direction, uniaxial extension in the y-direction, shear, and confined compression. The full script can be found in ``tutorials/ensemble_clustering_heterogeneous_domains.py``. In the next section, we will look at the results of our clustering pipeline.
+The full script can be found in ``tutorials/ensemble_clustering_heterogeneous_domains.py``.
 
 ```python3
 # cluster sets
@@ -174,6 +173,14 @@ for i in range(len(k_list)):
 	ensemble_ARI = cluster.get_ARI_multiple(truth,ensemble_label)
 ```
 
+### Results: Identifying sub-domains within a heterogeneous domain
+
+In the example above, we ran a code to cluster a heterogeneous sample depicting a circular inclusion with a neo-Hookean constitutive model. The 5 different sets of kinematics features are generated from 5 boundary conditions: equibiaxial extension, uniaxial extension in the x-direction, uniaxial extension in the y-direction, shear, and confined compression. Here, we take a look at the results of our clustering pipeline. 
+
+<p align = "center">
+<img alt="cir_inclusion_results" src="tutorials/figs_for_github/circle_inclusion_results.png" width="85%" />
+
+First, the ground truth provides a baseline for us to compare our subsequent clustering results. Note that each color represents a different cluster for the associated markers (e.g., the markers in the black sub-domain belongs to a different cluster than the markers in the gray sub-domain). Then, since we generated a set of kinematics features for each boundary condition, we can cluster each set of kinematics features individually and obtain the clustering result. We observe that the equibiaxial extension and the confined compression cases were able to recover the circle inclusion, while the rest failed to do so. Finally, we perform ensemble clustering with all 5 results to obtain the ensemble result, which provides a slightly better result than the individual clusters.
 
 ## Under construction
 - ``medoids_ind``: the indices (``points_sel``) of the medoids for the clusters in ``ensemble_label``. Each cluster has 1 medoid.
