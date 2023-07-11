@@ -3,6 +3,7 @@ import sklearn
 from sklearn.cluster import KMeans, SpectralClustering
 from sklearn.metrics import pairwise_distances_argmin_min, adjusted_rand_score
 from skimage import measure, filters
+from scipy.ndimage import zoom
 import copy
 
 def get_kmeans_label(x,n=2):
@@ -34,7 +35,7 @@ def label_by_position(img):
     '''Segment all the pixels in an image using the skimage.measure.label function'''
 
     img_labeled = measure.label(img+1)
-    return img_labeled
+    return img_labeled.astype(int)
 
 def find_small_regions(img_labeled,thresh=5):
     '''Find regions inside the image with the number of pixels lower than the threshold.'''
@@ -90,7 +91,6 @@ def segment_by_position(label,thresh=5,filter_size=(5,5)):
     img = arr_to_img(label)
     img_labeled = label_by_position(img)
     final_img = clean_tiny_clusters(img_labeled,thresh=thresh,filter_size=filter_size)
-    # final_img = clean_tiny_clusters(img_cleaned,thresh=thresh,filter_size=filter_size)
     final_label = img_to_arr(final_img)
     return final_label
 
@@ -266,32 +266,36 @@ def cluster_similarity_matrix(S,k,thresh=5,filter_size=(5,5),segment=True):
 
     return label_active,cluster_label
 
-def cluster_full_pipeline(features_all,k,points_sel,thresh=5,filter_size=(5,5),segment=True,positional_medoid=False,only_label=False):
+def cluster_full_pipeline(features_all,k,points_sel,min_clus_size=5,max_clus_size=100,filter_size=(5,5),segment=True,positional_medoid=False,only_label=False):
     '''Cluster and segment multiple sets of features.'''
     
     cluster_results = cluster_sets(features_all,k=k,\
-                    thresh=thresh,filter_size=filter_size,segment=segment,positional_medoid=positional_medoid)
+                    thresh=min_clus_size,filter_size=filter_size,segment=segment,positional_medoid=positional_medoid)
 
     S = get_similarity_matrix(cluster_results)
 
-    ensemble_label,naive_ensemble_label = cluster_similarity_matrix(S,k=k,thresh=thresh,filter_size=filter_size,segment=segment)
+    ensemble_label,naive_ensemble_label = cluster_similarity_matrix(S,k=k,thresh=min_clus_size,filter_size=filter_size,segment=segment)
+    
+    final_ensemble_label_img = segment_large_clusters(ensemble_label,points_sel,thresh=max_clus_size)
+
+    final_ensemble_label = img_to_arr(final_ensemble_label_img)
 
     if only_label==False:
-        medoids_ind = find_medoid_ind(points_sel,ensemble_label,markers=points_sel,positional_medoid=True)
+        medoids_ind = find_medoid_ind(points_sel,final_ensemble_label,markers=points_sel,positional_medoid=True)
 
-        features_compressed_all = get_compressed_features_multiple(features_all,ensemble_label,medoids_ind)
+        features_compressed_all = get_compressed_features_multiple(features_all,final_ensemble_label,medoids_ind)
 
         MSE_all = get_MSE_multiple(features_all,features_compressed_all)
 
-        return cluster_results,naive_ensemble_label,ensemble_label,medoids_ind,features_compressed_all,MSE_all
+        return cluster_results,naive_ensemble_label,final_ensemble_label,medoids_ind,features_compressed_all,MSE_all
     elif only_label==True:
-        return cluster_results,naive_ensemble_label,ensemble_label
+        return cluster_results,naive_ensemble_label,final_ensemble_label
     
-def get_ground_truth(points,length=1,width=1,het_domain='circle'):
+def get_ground_truth(points,length=1,width=1,het_domain='circle_inclusion',path=None):
     '''Obtain ground truth for heterogeneous domains.'''
     
     truth = []
-    if het_domain == 'circle':
+    if het_domain == 'circle_inclusion':
         radius = 0.2
         cent_cir = [length/2,width/2]
         for i in range(len(points)):
@@ -300,31 +304,72 @@ def get_ground_truth(points,length=1,width=1,het_domain='circle'):
             else:
                 truth.append(0)
 
-    elif het_domain == '4_circles':
-        radius = 0.2
-        c1=[length/4,width/4]
-        c2=[length/4,width*3/4]
-        c3=[length*3/4,width/4]
-        c4=[length*3/4,width*3/4]
+    elif het_domain == '4_circle_inclusions':
+        radius = 0.125
+        c1=[length*1/4,width*1/4]
+        c2=[length*3/4,width*3/4]
+        c3=[length*1/3,width*2/3]
+        c4=[length*2/3,width*1/3]
         for i in range(len(points)):
             if np.sqrt((points[i,0]-c1[0])**2 + (points[i,1]-c1[1])**2) <= radius:
                 truth.append(1)
             elif np.sqrt((points[i,0]-c2[0])**2 + (points[i,1]-c2[1])**2) <= radius:
-                truth.append(1)
+                truth.append(2)
             elif np.sqrt((points[i,0]-c3[0])**2 + (points[i,1]-c3[1])**2) <= radius:
-                truth.append(1)
+                truth.append(3)
             elif np.sqrt((points[i,0]-c4[0])**2 + (points[i,1]-c4[1])**2) <= radius:
-                truth.append(1)
+                truth.append(4)
             else:
                 truth.append(0)
-                
-    elif het_domain == 'split':
+    
+    elif het_domain == 'cross':
+        for i in range(len(points)):
+            pos_x = points[i,0]
+            pos_y = points[i,1]
+            if pos_x>=0.25 and pos_x<=0.75 and pos_y>=0.4 and pos_y<=0.6:
+                truth.append(0)
+            elif pos_x>=0.4 and pos_x<=0.6 and pos_y>=0.25 and pos_y<=0.75:
+                truth.append(0)
+            else:
+                truth.append(1)
+
+    elif het_domain == 'ring':
+        r_ring_outer = 0.35
+        r_ring_inner = 0.15
+        center_cir = [length/2,width/2]
+        for i in range(len(points)):
+            pos_x = points[i,0]
+            pos_y = points[i,1]
+            r_from_cent = np.sqrt((points[i,0]-center_cir[0])**2 + (points[i,1]-center_cir[1])**2)
+            if r_from_cent <= r_ring_inner:
+                truth.append(0)
+            elif r_from_cent >= r_ring_outer:
+                truth.append(1)
+            else:
+                truth.append(2)
+
+    elif het_domain == 'halfhalf':
         for i in range(len(points)):
             pos_x = points[i,0]
             if pos_x <= width/2:
                 truth.append(0)
             else:
                 truth.append(1)
+
+    elif het_domain == 'cahn_hilliard_image12':
+        # path = 'tutorials/files/example_data/Cahn_Hilliard_Image12_NH/'
+        pattern = np.loadtxt(path+'Image12.txt')
+        pattern_side_len = pattern.shape[0]
+
+        side_len = int(np.sqrt(len(points)))
+
+        truth_image = zoom(pattern, zoom=(side_len / pattern_side_len, side_len / pattern_side_len), order=0)
+        truth_image = np.round(truth_image).astype(int)
+        truth_image_segmented = label_by_position(truth_image)
+
+        truth = img_to_arr(truth_image_segmented)
+
+
     truth = np.array(truth)
     return truth
 
@@ -343,3 +388,43 @@ def get_ARI_multiple(truth,labels):
         ARI_scores = np.array(ARI_scores)
 
         return ARI_scores
+
+def segment_large_clusters(label_img,grid_markers,thresh):
+    '''Check all clusters. If the size of a cluster is above threshold, perform K-means cluster by position.'''
+    
+    if len(label_img.shape) == 1:
+        label_img = arr_to_img(label_img)
+    
+    relabeled_img = label_by_position(label_img)
+    relabeled_labels = img_to_arr(relabeled_img)
+
+    new_labels = copy.deepcopy(relabeled_labels)
+
+    need_to_cluster = []
+    for unique_label in np.unique(relabeled_labels):
+        cluster_ind = np.where(relabeled_labels==unique_label)[0]
+        if len(cluster_ind) >= thresh:
+            need_to_cluster.append(cluster_ind)
+    need_to_cluster = np.array(need_to_cluster,dtype=object)
+
+    count = len(np.unique(relabeled_labels))
+
+    # loop through all clusters above threshold
+    for i in range(len(need_to_cluster)):
+        cur_ind = need_to_cluster[i].astype(int)
+        cur_markers = grid_markers[cur_ind,:]
+
+        # determine k to ensure all clusters are below threshold
+        k = int(np.ceil(len(cur_ind)/thresh))
+
+        temp_label = get_kmeans_label(cur_markers,n=k).labels_
+
+        # ensure new labels don't overlap with old labels
+        count += len(np.unique(temp_label))
+        new_labels[cur_ind] = temp_label + count
+
+    # convert flat labels back to images and relabel for neatness
+    new_labels_img = arr_to_img(new_labels)
+    new_labels_img = label_by_position(new_labels_img)
+
+    return new_labels_img

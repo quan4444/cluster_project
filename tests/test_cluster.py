@@ -239,8 +239,11 @@ def test_get_ground_truth():
                       0,0,1,1,0,\
                       0,0,0,0,0])
     length = width = 1
-    found = cluster.get_ground_truth(points_sel,length,width,het_domain='circle')
+    found = cluster.get_ground_truth(points_sel,length,width,het_domain='circle_inclusion')
+    path = 'tutorials/files/example_data/Cahn_Hilliard_Image12_NH/'
+    found2 = cluster.get_ground_truth(points_sel,length,width,het_domain='cahn_hilliard_image12',path=path)
     assert np.allclose(known,found)
+    assert isinstance(found2, np.ndarray)
 
 def test_get_ARI_multiple():
     truth = np.array([0,0,0,0,1,1])
@@ -248,3 +251,38 @@ def test_get_ARI_multiple():
     known = np.array([1.0,1.0])
     found = cluster.get_ARI_multiple(truth,labels)
     assert np.allclose(known,found)
+
+def test_segment_large_clusters():
+    arr1 = np.ones((10,5)) * 10
+    arr2 = np.zeros((10,5))
+    label_img = np.concatenate((arr1,arr2),axis=1)
+    # label_img[0,0]=label_img[0,1]=label_img[0,2]=label_img[1,0]=label_img[2,0]=5
+    grid_markers = kn.sample_points(100,1)
+
+    # there are multiple solutions here
+    arr3 = np.ones((5,5))*1
+    arr4 = np.ones((5,5))*3
+    arr5 = np.ones((5,5))*2
+    arr6 = np.ones((5,5))*4
+    arr34 = np.concatenate((arr3,arr4),axis=1)
+    arr56 = np.concatenate((arr5,arr6),axis=1)
+    known1 = np.concatenate((arr34,arr56),axis=0).astype(int)
+    
+    arr3 = np.ones((10,3))*1
+    arr4 = np.ones((10,2))*2
+    arr5 = np.ones((5,5))*3
+    arr6 = np.ones((5,5))*4
+    arr34 = np.concatenate((arr3,arr4),axis=1)
+    arr56 = np.concatenate((arr5,arr6),axis=0)
+    known2 = np.concatenate((arr34,arr56),axis=1).astype(int)
+
+    arr3 = np.ones((10,2))*1
+    arr4 = np.ones((10,3))*2
+    arr5 = np.ones((5,5))*3
+    arr6 = np.ones((5,5))*4
+    arr34 = np.concatenate((arr3,arr4),axis=1)
+    arr56 = np.concatenate((arr5,arr6),axis=0)
+    known3 = np.concatenate((arr34,arr56),axis=1).astype(int)
+
+    found = cluster.segment_large_clusters(label_img,grid_markers,25)
+    assert np.allclose(known1,found) or np.allclose(known2,found) or np.allclose(known3,found)
