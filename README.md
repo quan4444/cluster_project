@@ -32,23 +32,23 @@ Briefly, [Kinematics](https://en.wikipedia.org/wiki/Kinematics) is a field of st
 
 ### Unsupervised Learning/Clustering
 
-In machine learning, [unsupervised learning](https://en.wikipedia.org/wiki/Unsupervised_learning) methods try to identify patterns within the data given no labels. Here, we use 2 common methods: [K-means Clustering](https://en.wikipedia.org/wiki/K-means_clustering), and [Spectral Clustering](https://en.wikipedia.org/wiki/Spectral_clustering). Due to the lack of labels, unsupervised learning methods cannot utilize more accepted error metrics (e.g., mean squared error), which would require labels or a ground truth. This has led to the development of [clustering performance evaluation metrics](https://scikit-learn.org/stable/modules/clustering.html#clustering-performance-evaluation) to try and assess the performance of the methods.
+In machine learning, [unsupervised learning](https://en.wikipedia.org/wiki/Unsupervised_learning) methods try to identify patterns within the data given no labels. Here, we use 2 common methods: [K-means Clustering](https://en.wikipedia.org/wiki/K-means_clustering), and [Spectral Clustering](https://en.wikipedia.org/wiki/Spectral_clustering). Both methods split a set of data points into clusters with similar behaviors. Due to the lack of labels, unsupervised learning methods cannot utilize more accepted error metrics (e.g., mean squared error), which would require labels or a ground truth. This has led to the development of [clustering performance evaluation metrics](https://scikit-learn.org/stable/modules/clustering.html#clustering-performance-evaluation) to try and assess the performance of the methods.
 
 ### Ensemble Clustering
 
-In many applications, we cannot determine the correctness of our unsupervised learning methods. However, we might be able to obtain different clustering results via different methods, or via different scenarios. Here, we can use [Ensemble Clustering](https://en.wikipedia.org/wiki/Consensus_clustering) to aggregate all the clustering results and obtain a final consensus result.
+In many applications, we cannot determine the correctness of our unsupervised learning methods. However, we might be able to obtain different clustering results via different methods or via different scenarios, then we aggregate the different clustering results to retrieve the final consensus clustering result using [Ensemble Clustering](https://en.wikipedia.org/wiki/Consensus_clustering).
 
 ## Project Pipeline <a name="pipeline"></a>
 
 The general pipeline is as follow:
 
-`Select a domain with a corresponding heterogeneous pattern` $\mapsto$ `Select constitutive model(s)` $\mapsto$ `Select a boundary condition` $\mapsto\$ `Generate displacements markers` $\mapsto$ `Calculate kinematics for markers` $\mapsto$ `Cluster markers to find sub-domains`
+`Select a domain with a corresponding heterogeneous pattern` $\mapsto$ `Select constitutive model(s)` $\mapsto$ `Select boundary condition(s)` $\mapsto\$ `Generate 1 set of displacement markers per boundary condition` $\mapsto$ `Calculate kinematics features for each set of markers` $\mapsto$ `Clustering pipeline`
 
 The following section will describe the details for our clustering pipeline
 
 ### Clustering pipeline
 
-From `Calculate kinematics for markers`, we will obtain the sets of kinematics for different boundary conditions. Then, we can follow our clustering pipeline to identify the sub-domains:
+From `Calculate kinematics features for each set of markers`, we will obtain the sets of kinematics for different boundary conditions. Then, we can follow our clustering pipeline to identify the sub-domains:
 
 **image for clustering pipeline**
 
