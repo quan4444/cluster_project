@@ -284,5 +284,13 @@ def test_segment_large_clusters():
     arr56 = np.concatenate((arr5,arr6),axis=0)
     known3 = np.concatenate((arr34,arr56),axis=1).astype(int)
 
+    arr3 = np.ones((10,2))*1
+    arr4 = np.ones((10,3))*2
+    arr5 = np.ones((5,5))*3
+    arr6 = np.ones((5,5))*4
+    arr34 = np.concatenate((arr3,arr4),axis=1)
+    arr56 = np.concatenate((arr5,arr6),axis=0)
+    known4 = np.concatenate((arr34,arr56),axis=1).astype(int)
+
     found = cluster.segment_large_clusters(label_img,grid_markers,25)
-    assert np.allclose(known1,found) or np.allclose(known2,found) or np.allclose(known3,found)
+    assert np.allclose(known1,found) or np.allclose(known2,found) or np.allclose(known3,found) or np.allclose(known4,found)
