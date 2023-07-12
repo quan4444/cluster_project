@@ -12,12 +12,13 @@
 * [Project Background and Summary](#summary)
 * [Project Pipeline](#pipeline)
 * [Tutorials: Identifying sub-domains within a heterogeneous domain](#tutorial1)
+* [Tutorials: Clustering a homogeneous domain into self-similar sub-domains for sensor placement](#tutorial2)
 
 ## Project Background and Summary <a name="summary"></a>
 
 The goal of this project is to cluster a domain into several sub-domains using the mechanical and positional information available. Broadly speaking, a domain can represent many physical world objects, such as a sample of soft tissue or soft robot. We developed a clustering pipeline with 2 main applications in mind:
 - Clustering a heterogeneous soft tissue into mechanically homogeneous sub-domains.
-- Clustering a domain representing a soft robot into self-similar (i.e., the strain values within a sub-domain are similar) sub-domains for sensor placement.
+- Clustering a homogeneous domain representing a soft robot into self-similar sub-domains (i.e., the strain values within a sub-domain are similar) for sensor placement.
 Before explaining the full pipeline, we will introduce some concepts as background. Readers familiar with continuum mechanics and unsupervised machine learning can skip the rest of this section.
 
 To learn more details about this project, please check out our full paper here. (link)
@@ -58,7 +59,7 @@ From `Calculate kinematics features for each set of markers`, we will obtain the
 
 ## Tutorials: Identifying sub-domains within a heterogeneous domain <a name="tutorial1"></a>
 
-This GitHub repository contains a folder called ``tutorials`` that contains two examples, one for running the clustering pipeline on the heterogeneous samples to identify the different material domains, and one for running the clustering pipeline on the homogeneous sample for sensors placement. For starter, we will identify the sub-domains for a heterogeneous domain. To run the tutorials, change your current working directory to the ``tutorials`` folder. The outputs of the tutorials are stored inside the folders in ``tutorials/files/example_data/`` with names ending in ``'_results'``. The details of the outputs are discussed below.
+This GitHub repository contains a folder called ``tutorials`` that contains two examples, one for running the clustering pipeline on the heterogeneous samples to identify the different material sub-domains, and one for running the clustering pipeline on the homogeneous sample for sensor placement. For starter, we will identify the sub-domains for a heterogeneous domain. To run the tutorials, change your current working directory to the ``tutorials`` folder. The outputs of the tutorials are stored inside the folders in ``tutorials/files/example_data/`` with names ending in ``'_results'``. The details of the outputs are discussed below.
 
 ### Preparing data for analysis
 
@@ -77,7 +78,7 @@ Here is how the folders will be structured:
 |				|___ 'disp_example1.npy'
 ```
 
-Here, we will import the necessary packages. We will select the files for random markers locations as ``pt_loc_files``, and the files for the corresponding displacements as ``u_mat_files``. Each pair of ``pt_loc_files`` and ``u_mat_files`` contains the information for a set of boundary condition constraints. After selecting the files, we will use the function ``load_multiple`` to load all random markers locations into ``pt_loc_all`` and all displacements into ``u_mat_all``. ``pt_loc_all`` and ``u_mat_all`` are m by n by dim arrays, where m is the number of boundary conditions, n the number of random markers, and dim the dimension of the data. The files below contains the information for a heterogeneous sample depicting a circular inclusion with a neo-Hookean constitutive model.
+Here, we will import the necessary packages. We will select the files for random markers locations as ``pt_loc_files``, and the files for the corresponding displacements as ``u_mat_files``. Each pair of ``pt_loc_files`` and ``u_mat_files`` contains the information for a set of boundary condition constraints. After selecting the files, we will use the function ``load_multiple`` to load all random markers locations into ``pt_loc_all`` and all displacements into ``u_mat_all``. ``pt_loc_all`` and ``u_mat_all`` are m by n by dim arrays, where m is the number of boundary conditions, n the number of random markers, and dim the dimension of the data. The imported files below contains the information for a heterogeneous sample depicting a circular inclusion with a neo-Hookean constitutive model.
 
 ```python3
 import numpy as np
@@ -185,6 +186,87 @@ In the example above, we ran a code to cluster a heterogeneous sample depicting 
 <img alt="cir_inclusion_results" src="tutorials/figs_for_github/circle_inclusion_results.png" width="85%" />
 
 First, the ground truth provides a baseline for us to compare our subsequent clustering results. Note that each color represents a different cluster for the associated markers (e.g., the markers in the black sub-domain belongs to a different cluster than the markers in the gray sub-domain). Then, since we generated a set of kinematics features for each boundary condition, we can cluster each set of kinematics features individually and obtain the clustering result. We observe that the equibiaxial extension and the confined compression cases were able to recover the circle inclusion, while the rest failed to do so. Finally, we perform ensemble clustering with all 5 results to obtain the ensemble result, which provides a slightly better result than the individual clusters.
+
+## Tutorials: Clustering a homogeneous domain into self-similar sub-domains for sensor placement <a name="tutorial2"></a>
+
+For this tutorials, we will cluster a homogeneous domain undergoing different boundary conditions into self-similar sub-domains for sensor placement suggestions. Here, self-similar sub-domains are sub-domains that contain markers with similar strain value. The process for obtaining the final clustering result is similar to the previous tutorials, with one main distinction: After clustering the domain into multiple sub-domains, we consider a sensor placed at the medoid of each sub-domain. Here, we will present the code for the tutorial, then we will discuss the outputs and results.
+
+```python3
+import numpy as np
+from cluster_project import kinematics as kn
+from cluster_project import cluster, plotting
+
+# user inputs for size of sample
+length_samp = 1
+
+# load markers positions and displacements
+disp_path = 'files/example_data/homogeneous/'
+pt_loc_files = np.array(['pt_homog_equi_disp0.4.npy','pt_homog_uni_y_disp0.4.npy',\
+                        'pt_homog_uni_x_disp0.4.npy','pt_homog_shear_yf0.1.npy'])
+u_mat_files = np.array(['disp_homog_equi_disp0.4.npy','disp_homog_uni_y_disp0.4.npy',\
+                       'disp_homog_uni_x_disp0.4.npy','disp_homog_shear_yf0.1.npy'])
+pt_loc_all,u_mat_all = kn.load_multiple(disp_path,pt_loc_files,u_mat_files)
+disp_type = np.array(['equibiaxial','uniaxial y','uniaxial x','shear'])
+
+# generate grid markers
+pt_len = 8000
+points_sel = kn.sample_points(pt_len,L=length_samp)
+
+# obtain kinematics at grid markers for each file
+num_neigh=40
+
+_,_,strain_list,I_strain_list,_,_,_,I_C_list,_,_ = kn.get_kinematics_multiple(pt_loc_all,u_mat_all,points_sel,num_neigh)
+
+# cluster sets
+features_all = strain_list
+highest_k = 30
+min_clus_size = 5
+max_clus_size = 800
+filter_size = (5,5)
+segment = True
+positional_medoid = True
+
+k_list = np.linspace(2,highest_k,highest_k-1,dtype=int)
+medoids_ind_list = []
+feature_compressed_list=()
+MSE_vs_k_features=[]
+ensemble_label_list = []
+cluster_results_list = ()
+for i in range(len(k_list)):
+
+	k_ = k_list[i]
+	print(f'i={i} k={k_}')
+
+	cluster_results,naive_ensemble_label,ensemble_label,medoids_ind,features_compressed_all,MSE_all = \
+		cluster.cluster_full_pipeline(features_all,k_,points_sel,\
+				min_clus_size=min_clus_size,max_clus_size=max_clus_size,filter_size=filter_size,\
+				segment=segment,positional_medoid=positional_medoid)
+
+	medoids_ind_list.append(medoids_ind)
+	feature_compressed_list = feature_compressed_list + (features_compressed_all,)
+	MSE_vs_k_features.append(MSE_all)
+	ensemble_label_list.append(ensemble_label)
+	cluster_results_list = cluster_results_list +(cluster_results,)
+
+	if k_list[i] == 2 or k_list[i] % 10 == 0:
+		plotting.plot_cluster_by_bcs(disp_type,cluster_results,points_sel,big_title='boundary conditions')
+		plotting.plot_cluster(naive_ensemble_label,points_sel,title_extra=' (naive)')
+		plotting.plot_cluster(ensemble_label,points_sel,title_extra=' (segmented)')
+		plotting.plot_centroids_on_clusters(medoids_ind,points_sel,ensemble_label)
+medoids_ind_list = np.array(medoids_ind_list,dtype=object)
+MSE_vs_k_features = np.array(MSE_vs_k_features)
+ensemble_label_list = np.array(ensemble_label_list)
+
+plotting.plot_MSE_multiple(k_list,MSE_vs_k_features,disp_type,big_title='MSE vs. k',x_axis_label='k')
+num_sensors = [len(array) for array in medoids_ind_list]
+plotting.plot_MSE_multiple(num_sensors,MSE_vs_k_features,disp_type,big_title='MSE vs. num sensors',x_axis_label='num sensors',scatter_plot=True)
+
+# save everything for making figures
+np.save('files/example_data/ensemble_label_list.npy',ensemble_label_list)
+np.save('files/example_data/cluster_results_list.npy',cluster_results_list)
+np.save('files/example_data/features_all.npy',features_all)
+np.save('files/example_data/feature_compressed_list.npy',feature_compressed_list)
+```
 
 ## Under construction
 - ``medoids_ind``: the indices (``points_sel``) of the medoids for the clusters in ``ensemble_label``. Each cluster has 1 medoid.
