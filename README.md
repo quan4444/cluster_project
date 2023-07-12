@@ -11,7 +11,7 @@
 
 * [Project Background and Summary](#summary)
 * [Project Pipeline](#pipeline)
-* [Tutorials](#tutorial)
+* [Tutorials: Identifying sub-domains within a heterogeneous domain](#tutorial1)
 
 ## Project Background and Summary <a name="summary"></a>
 
@@ -56,9 +56,9 @@ From `Calculate kinematics features for each set of markers`, we will obtain the
 <p align = "center">
 <img alt="clustering_pipeline" src="tutorials/figs_for_github/minimalist_pipeline.png" width="85%" />
 
-## Tutorials <a name="tutorial"></a>
+## Tutorials: Identifying sub-domains within a heterogeneous domain <a name="tutorial1"></a>
 
-This GitHub repository contains a folder called ``tutorials`` that contains two examples, one for running the clustering pipeline on the homogeneous sample for sensors placement, and one for running the clustering pipeline on the heterogeneous samples to identify the different material domains. To run the tutorials, change your current working directory to the ``tutorials`` folder.
+This GitHub repository contains a folder called ``tutorials`` that contains two examples, one for running the clustering pipeline on the heterogeneous samples to identify the different material domains, and one for running the clustering pipeline on the homogeneous sample for sensors placement. For starter, we will identify the sub-domains for a heterogeneous domain. To run the tutorials, change your current working directory to the ``tutorials`` folder. The outputs of the tutorials are stored inside the folders in ``tutorials/files/example_data/`` with names ending in ``'_results'``. The details of the outputs are discussed below.
 
 ### Preparing data for analysis
 
@@ -77,7 +77,7 @@ Here is how the folders will be structured:
 |				|___ 'disp_example1.npy'
 ```
 
-Here, we will import the necessary packages. We will select the files for random markers locations as ``pt_loc_files``, and the files for the corresponding displacements as ``u_mat_files``. Each pair of ``pt_loc_files`` and ``u_mat_files`` contains the information for a set of boundary condition constraints. After selecting the files, we will use the function ``load_multiple`` to load all random markers locations into ``pt_loc_all`` and all displacements into ``u_mat_all``. ``pt_loc_all`` and ``u_mat_all`` are m by n by dim arrays, where m is the number of boundary conditions, n the number of random markers, and dim the dimension of the data.
+Here, we will import the necessary packages. We will select the files for random markers locations as ``pt_loc_files``, and the files for the corresponding displacements as ``u_mat_files``. Each pair of ``pt_loc_files`` and ``u_mat_files`` contains the information for a set of boundary condition constraints. After selecting the files, we will use the function ``load_multiple`` to load all random markers locations into ``pt_loc_all`` and all displacements into ``u_mat_all``. ``pt_loc_all`` and ``u_mat_all`` are m by n by dim arrays, where m is the number of boundary conditions, n the number of random markers, and dim the dimension of the data. The files below contains the information for a heterogeneous sample depicting a circular inclusion with a neo-Hookean constitutive model.
 
 ```python3
 import numpy as np
@@ -135,10 +135,12 @@ u_mat_list,grad_u_list,strain_list,I_strain_list,F_list,I_F_list,C_list,I_C_list
 
 #### Clustering the domain
 
-First, we select the feature we want to use for clustering (e.g., ``features_all = strain_list``). The function ``cluster_full_pipelines`` will take in ``features_all``, the number of clusters ``k``, and the grid markers ``points_sel``, and will output the clustering results and other variables useful for analysis, which will be discussed below.
-- ``cluster_results``: the clustering results for the individual boundary conditions, with shape of m by n, where m is the number of boundary conditions, and n the number of grid markers. The values of the array correspond to the label of the markers.
-- ``naive_ensemble_label``: the clustering result for the ensemble, obtained AFTER clustering the affinity matrix with Spectral clustering, but BEFORE the segmentation by position step. The array has the shape n by 1.
-- ``ensemble_label``: the clustering result for the ensemble, obtain after the segmentation by position step. The array has the shape n by 1.
+First, we select the feature we want to use for clustering (e.g., ``features_all = I_C_list``). The function ``cluster_full_pipelines`` will take in ``features_all``, the number of clusters ``k``, and the grid markers ``points_sel``, and will output the clustering results and other variables useful for analysis, which will be discussed below. The outputs for this tutorial are stored in ``tutorials/files/example_data/circle_inclusion_NH_results``.
+- ``cluster_results``: the clustering results for the individual boundary conditions, with shape of m by n, where m is the number of boundary conditions, and n the number of grid markers. The values of the array correspond to the label of the markers. This array is stored as ``individual_bcs_cluser_results.npy``.
+- ``naive_ensemble_label``: the clustering result for the ensemble, obtained AFTER clustering the affinity matrix with Spectral clustering, but BEFORE the segmentation by position step. The array has the shape n by 1. This array does not represent any final results.
+- ``ensemble_label``: the clustering result for the ensemble, obtain after the segmentation by position step. The array has the shape n by 1. This array is stored as ``ensemble_cluster_result.npy``.
+- ``cluster_results_ARI``: the ARI score of the clustering results for the individual boundary conditions, with a shape of m by 1, where m is the number of boundary conditions. This array is stored as ``individual_bcs_ARI.npy``.
+- ``ensemble_ARI``: the ARI score for the ensemble clustering result. This float number is stored as ``ensemle_ARI.npy``.
 
 The full script can be found in ``tutorials/ensemble_clustering_heterogeneous_domains.py``.
 
@@ -175,9 +177,9 @@ for i in range(len(k_list)):
 	ensemble_ARI = cluster.get_ARI_multiple(truth,ensemble_label)
 ```
 
-### Results: Identifying sub-domains within a heterogeneous domain
+### Results
 
-In the example above, we ran a code to cluster a heterogeneous sample depicting a circular inclusion with a neo-Hookean constitutive model. The 5 different sets of kinematics features are generated from 5 boundary conditions: equibiaxial extension, uniaxial extension in the x-direction, uniaxial extension in the y-direction, shear, and confined compression. Here, we take a look at the results of our clustering pipeline. 
+In the example above, we ran a code to cluster a heterogeneous sample depicting a circular inclusion with a neo-Hookean constitutive model. The 5 different sets of kinematics features are generated from 5 boundary conditions: equibiaxial extension, uniaxial extension in the x-direction, uniaxial extension in the y-direction, shear, and confined compression. Here, we take a look at the results of our clustering pipeline. The clustering results for each boundary condition are plotted using the array ``cluster_results``. The ensemble result is plotted using ``ensemble_label``.
 
 <p align = "center">
 <img alt="cir_inclusion_results" src="tutorials/figs_for_github/circle_inclusion_results.png" width="85%" />
