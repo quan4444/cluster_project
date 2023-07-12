@@ -7,17 +7,17 @@ length_samp = 1
 
 # load markers positions and displacements
 
-# # circle inclusion / neo-hookean
-# disp_path = 'files/example_data/circle_inclusion_NH'
-# pt_loc_files = np.array(['pt_sssc_equi_disp0.4.npy','pt_sssc_uni_y_disp0.4.npy',\
-#                         'pt_sssc_uni_x_disp0.4.npy','pt_sssc_shear_0.4.npy',\
-#                         'pt_sssc_comp_0.2.npy'])
-# u_mat_files = np.array(['disp_sssc_equi_disp0.4.npy','disp_sssc_uni_y_disp0.4.npy',\
-# 						'disp_sssc_uni_x_disp0.4.npy','disp_sssc_shear_0.4.npy',\
-# 						'disp_sssc_comp_0.2.npy'])
-# pt_loc_all,u_mat_all = kn.load_multiple(disp_path,pt_loc_files,u_mat_files)
-# disp_type = np.array(['equibiaxial','uniaxial y','uniaxial x','shear','confined compression'])
-# domain_type = 'circle_inclusion' # necessary for obtaining ground truth / ARI
+# circle inclusion / neo-hookean
+disp_path = 'files/example_data/circle_inclusion_NH'
+pt_loc_files = np.array(['pt_sssc_equi_disp0.4.npy','pt_sssc_uni_y_disp0.4.npy',\
+                        'pt_sssc_uni_x_disp0.4.npy','pt_sssc_shear_0.4.npy',\
+                        'pt_sssc_comp_0.2.npy'])
+u_mat_files = np.array(['disp_sssc_equi_disp0.4.npy','disp_sssc_uni_y_disp0.4.npy',\
+						'disp_sssc_uni_x_disp0.4.npy','disp_sssc_shear_0.4.npy',\
+						'disp_sssc_comp_0.2.npy'])
+pt_loc_all,u_mat_all = kn.load_multiple(disp_path,pt_loc_files,u_mat_files)
+disp_type = np.array(['equibiaxial','uniaxial y','uniaxial x','shear','confined compression'])
+domain_type = 'circle_inclusion' # necessary for obtaining ground truth / ARI
 
 # # 4 circle inclusions / neo-hookean
 # disp_path = 'files/example_data/four_circle_inclusions_NH'
@@ -127,19 +127,19 @@ length_samp = 1
 # disp_type = np.array(['seed 13','seed 14','seed 15','seed 16','seed 17','seed 18']) # 
 # domain_type = 'cross' # necessary for obtaining ground truth / ARI
 
-# Cahn-Hilliard Image 12 / neo-hookean / random boundary conditions
-disp_path = 'files/example_data/Cahn_Hilliard_Image12_NH_random'
-# pt_loc_files = np.array(['pt_CH_Image12_random_seed_111.npy','pt_CH_Image12_random_seed_112.npy',\
-#                         'pt_CH_Image12_random_seed_113.npy','pt_CH_Image12_random_seed_115.npy',\
-# 						'pt_CH_Image12_random_seed_119.npy','pt_CH_Image12_random_seed_120.npy'])
-# u_mat_files = np.array(['disp_CH_Image12_random_seed_111.npy','disp_CH_Image12_random_seed_112.npy',\
-# 						'disp_CH_Image12_random_seed_113.npy','disp_CH_Image12_random_seed_115.npy',\
-# 						'disp_CH_Image12_random_seed_119.npy','disp_CH_Image12_random_seed_120.npy'])
-pt_loc_files = np.array(['pt_CH_Image12_random_seed_111.npy','pt_CH_Image12_random_seed_112.npy'])
-u_mat_files = np.array(['disp_CH_Image12_random_seed_111.npy','disp_CH_Image12_random_seed_112.npy'])
-pt_loc_all,u_mat_all = kn.load_multiple(disp_path,pt_loc_files,u_mat_files)
-disp_type = np.array(['seed 111','seed 112']) # ,'seed 113','seed 115','seed 119','seed 120'
-domain_type = 'cahn_hilliard_image12' # necessary for obtaining ground truth / ARI
+# # Cahn-Hilliard Image 12 / neo-hookean / random boundary conditions
+# disp_path = 'files/example_data/Cahn_Hilliard_Image12_NH_random'
+# # pt_loc_files = np.array(['pt_CH_Image12_random_seed_111.npy','pt_CH_Image12_random_seed_112.npy',\
+# #                         'pt_CH_Image12_random_seed_113.npy','pt_CH_Image12_random_seed_115.npy',\
+# # 						'pt_CH_Image12_random_seed_119.npy','pt_CH_Image12_random_seed_120.npy'])
+# # u_mat_files = np.array(['disp_CH_Image12_random_seed_111.npy','disp_CH_Image12_random_seed_112.npy',\
+# # 						'disp_CH_Image12_random_seed_113.npy','disp_CH_Image12_random_seed_115.npy',\
+# # 						'disp_CH_Image12_random_seed_119.npy','disp_CH_Image12_random_seed_120.npy'])
+# pt_loc_files = np.array(['pt_CH_Image12_random_seed_111.npy','pt_CH_Image12_random_seed_112.npy'])
+# u_mat_files = np.array(['disp_CH_Image12_random_seed_111.npy','disp_CH_Image12_random_seed_112.npy'])
+# pt_loc_all,u_mat_all = kn.load_multiple(disp_path,pt_loc_files,u_mat_files)
+# disp_type = np.array(['seed 111','seed 112']) # ,'seed 113','seed 115','seed 119','seed 120'
+# domain_type = 'cahn_hilliard_image12' # necessary for obtaining ground truth / ARI
 
 # # split / holzapfel-ogden / random boundary conditions
 # disp_path = 'files/example_data/halfhalf_HO_random'
@@ -233,6 +233,11 @@ for i in range(len(k_list)):
 	plotting.plot_cluster_and_ARI_by_bcs(disp_type,cluster_results,points_sel,cluster_results_ARI,big_title='boundary conditions')
 	plotting.plot_cluster(naive_ensemble_label,points_sel,title_extra=' (naive)')
 	plotting.plot_cluster_ARI(ensemble_label,points_sel,ensemble_ARI,title_extra='segmented ensemble')
+
+np.save('files/example_data/circle_inclusion_NH_results/individual_bcs_cluster_results.npy',cluster_results)
+np.save('files/example_data/circle_inclusion_NH_results/individual_bcs_ARI.npy',cluster_results_ARI)
+np.save('files/example_data/circle_inclusion_NH_results/ensemble_cluster_result.npy',ensemble_label)
+np.save('files/example_data/circle_inclusion_NH_results/ensemble_ARI.npy',ensemble_ARI)
 
 # plotting.plot_MSE_multiple(k_list,MSE_vs_k_features,disp_type,big_title='MSE vs. k',x_axis_label='k')
 # num_sensors = [len(array) for array in medoids_ind_list]
