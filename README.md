@@ -17,19 +17,21 @@
 
 The goal of this project is to cluster a domain into several sub-domains using the mechanical and positional information available. Broadly speaking, a domain can represent many physical world objects, such as a sample of soft tissue or soft robot. We developed a clustering pipeline with 2 main applications in mind:
 - Clustering a heterogeneous soft tissue into mechanically homogeneous sub-domains.
-- Clustering a soft robot into different sub-domains for sensors placement.
+- Clustering a domain representing a soft robot into self-similar (i.e., the strain values within a sub-domain are similar) sub-domains for sensor placement.
 Before explaining the full pipeline, we will introduce some concepts as background. Readers familiar with continuum mechanics and unsupervised machine learning can skip the rest of this section.
+
+To learn more details about this project, please check out our full paper here. (link)
 
 ### Markers on Domain
 
-In this project, we have a 3D domain with size 1 by 1 by 0.05. As we perform mechanical extensions (e.g., equibiaxial extension, uniaxial extension) on the domain, we can track its movements with randomly sampled markers at the surface of the domain. In many applications, we can use digital markers (e.g., Digital Image Correlation) or physical markers (e.g., hair follicles, skin pores) to track the deformations of the objects.
+In this project, we have a 3D domain with size $1\times1\times0.05$. As we perform mechanical extensions (e.g., equibiaxial extension, uniaxial extension) on the domain, we can track its movements with randomly sampled markers at the surface of the domain. In many applications, we can use digital markers (e.g., key points, corner points) or physical markers (e.g., hair follicles, skin pores, speckle patterns) to track the deformations of the objects.
 
 <p align = "center">
 <img alt="random_markers" src="tutorials/figs_for_github/random_markers.png" width="40%" />
 
 ### Kinematics
 
-Briefly, [Kinematics](https://en.wikipedia.org/wiki/Kinematics) is a field of study describing the motion of objects and markers. In this project, we will use the following kinematics (from [continuum mechanics](http://www.continuummechanics.org/)): displacement $u$, displacement gradient $\nabla u$, strain $E$, deformation gradient $F$, right Cauchy-Green $C$, left Cauchy-Green $b$, and invariants $I$.
+Briefly, [Kinematics](https://en.wikipedia.org/wiki/Kinematics) is a field of study describing the motion of objects. In this project, we will use the following kinematics (from [continuum mechanics](http://www.continuummechanics.org/)): displacement $u$, displacement gradient $\nabla u$, strain $E$, deformation gradient $F$, right Cauchy-Green $C$, left Cauchy-Green $b$, and invariants $I$.
 
 ### Unsupervised Learning/Clustering
 
