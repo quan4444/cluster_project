@@ -68,7 +68,7 @@ num_sensors = [len(array) for array in medoids_ind_list]
 plotting.plot_MSE_multiple(num_sensors,MSE_vs_k_features,disp_type,big_title='MSE vs. num sensors',x_axis_label='num sensors',scatter_plot=True)
 
 # save everything for making figures
-np.save('figs_for_paper/ensemble_label_list.npy',ensemble_label_list)
-np.save('figs_for_paper/feature_compressed_list.npy',feature_compressed_list)
-np.save('figs_for_paper/features_all.npy',features_all)
-np.save('figs_for_paper/cluster_results_list.npy',cluster_results_list)
+np.save('files/example_data/ensemble_label_list.npy',ensemble_label_list)
+np.save('files/example_data/cluster_results_list.npy',cluster_results_list)
+np.save('files/example_data/features_all.npy',features_all)
+np.save('files/example_data/feature_compressed_list.npy',feature_compressed_list)
