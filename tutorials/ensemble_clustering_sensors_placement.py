@@ -6,7 +6,7 @@ from cluster_project import cluster, plotting
 length_samp = 1
 
 # load markers positions and displacements
-disp_path = 'files/example_data/homogeneous/'
+disp_path = 'files/example_data/homogeneous_NH/'
 pt_loc_files = np.array(['pt_homog_equi_disp0.4.npy','pt_homog_uni_y_disp0.4.npy',\
                         'pt_homog_uni_x_disp0.4.npy','pt_homog_shear_yf0.1.npy'])
 u_mat_files = np.array(['disp_homog_equi_disp0.4.npy','disp_homog_uni_y_disp0.4.npy',\
@@ -66,9 +66,13 @@ ensemble_label_list = np.array(ensemble_label_list)
 plotting.plot_MSE_multiple(k_list,MSE_vs_k_features,disp_type,big_title='MSE vs. k',x_axis_label='k')
 num_sensors = [len(array) for array in medoids_ind_list]
 plotting.plot_MSE_multiple(num_sensors,MSE_vs_k_features,disp_type,big_title='MSE vs. num sensors',x_axis_label='num sensors',scatter_plot=True)
+num_sensors = np.array(num_sensors)
 
 # save everything for making figures
-np.save('files/example_data/ensemble_label_list.npy',ensemble_label_list)
-np.save('files/example_data/cluster_results_list.npy',cluster_results_list)
-np.save('files/example_data/features_all.npy',features_all)
-np.save('files/example_data/feature_compressed_list.npy',feature_compressed_list)
+np.save('files/example_data/homogeneous_NH_results/ensemble_label_list.npy',ensemble_label_list)
+np.save('files/example_data/homogeneous_NH_results/cluster_results_list.npy',cluster_results_list)
+np.save('files/example_data/homogeneous_NH_results/medoids_ind_list.npy',medoids_ind_list)
+np.save('files/example_data/homogeneous_NH_results/features_all.npy',features_all)
+np.save('files/example_data/homogeneous_NH_results/feature_compressed_list.npy',feature_compressed_list)
+np.save('files/example_data/homogeneous_NH_results/MSE_vs_k_features.npy',MSE_vs_k_features)
+np.save('files/example_data/homogeneous_NH_results/num_sensors.npy',num_sensors)
