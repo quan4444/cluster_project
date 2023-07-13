@@ -38,7 +38,7 @@ Here, we will explain the definitions and provide some intuition for the kinemat
 
 ### Unsupervised Learning/Clustering
 
-In machine learning, [unsupervised learning](https://en.wikipedia.org/wiki/Unsupervised_learning) methods try to identify patterns within the data given no labels. Here, we use 2 common methods: [K-means Clustering](https://en.wikipedia.org/wiki/K-means_clustering), and [Spectral Clustering](https://en.wikipedia.org/wiki/Spectral_clustering). Both methods split a set of data points into clusters with similar behaviors. A more detailed explaination is provided below. Due to the lack of labels, unsupervised learning methods cannot utilize more accepted error metrics (e.g., mean squared error), which would require labels or a ground truth. This has led to the development of [clustering performance evaluation metrics](https://scikit-learn.org/stable/modules/clustering.html#clustering-performance-evaluation) to try and assess the performance of the methods. For our project, we select the [Adjusted Rand Index (ARI)](https://en.wikipedia.org/wiki/Rand_index#Adjusted_Rand_index) as our performance evaluation method
+In machine learning, [unsupervised learning](https://en.wikipedia.org/wiki/Unsupervised_learning) methods try to identify patterns within the data given no labels. Here, we use 2 common methods: [K-means Clustering](https://en.wikipedia.org/wiki/K-means_clustering), and [Spectral Clustering](https://en.wikipedia.org/wiki/Spectral_clustering). Both methods split a set of data points into clusters with similar behaviors. A more detailed explaination is provided below. Since unsupervised learning methods outputs a set of labels, we cannot use more accepted error metrics (e.g., mean squared error) to assess the performance of our methods. This has led to the development of [clustering performance evaluation metrics](https://scikit-learn.org/stable/modules/clustering.html#clustering-performance-evaluation). For our project, we select the [Adjusted Rand Index (ARI)](https://en.wikipedia.org/wiki/Rand_index#Adjusted_Rand_index) as our performance evaluation method.
 
 #### K-Means Clustering
 [K-means clustering](https://en.wikipedia.org/wiki/K-means_clustering) aims to minimized the within-cluster sum-of-squares criterion:
@@ -52,12 +52,15 @@ where $n$ is the number of objects, $C$ the clusters, $j$ the cluster index, $\m
 [Spectral clustering](https://en.wikipedia.org/wiki/Spectral_clustering) is an unsupervised learning method based on calculating the normalized Laplacian of the objects, and clustering the largest eigenvectors to obtain the labels. Alternatively, we can pre-compute an affinity matrix and use Spectral clustering along with K-means++ as a graph-partitioning method.
 
 #### Adjusted Rand Index (ARI)
-Given a ground truth label, we are able to assess the performance of unsupervised learning methods via the Adjusted Rand index (ARI). Specifically, we use the ARI to compare the set of known ground truth clusters $X$ to the set of clustering results $Y$ on $n$ markers. We calculate ARI as:
+Given a ground truth label, we are able to assess the performance of unsupervised learning methods via the [Adjusted Rand index (ARI)](https://en.wikipedia.org/wiki/Rand_index#Adjusted_Rand_index). Specifically, we use the ARI to compare the set of known ground truth clusters $X$ to the set of clustering results $Y$ on $n$ markers. We calculate ARI as:
 
 <p align="center">
 $\mathrm{RI}=\frac{a+b}{C_2^{n}} \qquad \qquad \qquad \mathrm{ARI}=\frac{\mathrm{RI}-E[\mathrm{RI}]}{max(\mathrm{RI})-E[\mathrm{RI}]}$
 
 where $a$ is the number of pairs of markers in the same set for both $X$ and $Y$, $b$ is the number of pairs of markers that are in different sets in $X$ and $Y$, and $C_2^{n}=n(n-1)/2$ is the total number of marker pairs. With a scoring ranging $[-0.5,1]$, ARI assigns a score of $0.0$ for random labeling, a score of $1.0$ when the clustering result is identical to the known ground truth, and a score of $-0.5$ when the clustering result is worse than that of random clustering. The figure below provides an intuitive understanding of the ARI score.
+
+<p align = "center">
+<img alt="ARI" src="tutorials/figs_for_github/ARI.png" width="75%" />
 
 ### Ensemble Clustering
 
