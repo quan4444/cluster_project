@@ -22,6 +22,9 @@ The goal of this project is to cluster a domain into several sub-domains using t
 
 Before explaining the full pipeline, we will introduce some concepts as background. Readers familiar with continuum mechanics and unsupervised machine learning can skip the rest of this section.
 
+<p align = "center">
+<img alt="big_big_overview" src="tutorials/figs_for_github/big_big_overview.png" width="50%" />
+
 ### Markers on Domain
 
 In this project, we have a 3D domain with size $1\times1\times0.05$. As we perform mechanical extensions (e.g., equibiaxial extension, uniaxial extension) on the domain, we can track its movements with randomly sampled markers at the surface of the domain. In many applications, we can use digital markers (e.g., key points, corner points) or physical markers (e.g., hair follicles, skin pores, speckle patterns) to track the deformations of the objects.
@@ -212,7 +215,7 @@ First, the ground truth provides a baseline for us to compare our subsequent clu
 
 ## Tutorials: Clustering a homogeneous domain into self-similar sub-domains for sensor placement <a name="tutorial2"></a>
 
-For this tutorials, we will cluster a homogeneous domain undergoing different boundary conditions into self-similar sub-domains for sensor placement suggestions. Here, self-similar sub-domains are sub-domains that contain markers with similar strain value. The process for obtaining the final clustering result is similar to the previous tutorials, with one main distinction: After clustering the domain into multiple sub-domains, we consider a sensor placed at the medoid of each sub-domain. We will first present the code for the tutorial, then we will discuss the outputs and results. The full code is found in ``tutorials/ensemble_clustering_sensors_placement.py``, and the results are in ``tutorials/files/example_data/homogeneous_NH_results``.
+For this tutorials, we will cluster a homogeneous domain undergoing different boundary conditions into self-similar sub-domains for sensor placement suggestions. Here, self-similar sub-domains are sub-domains that contain markers with similar strain value. The process for obtaining the final clustering result is similar to the previous tutorials, with three main distinctions: (1) since k-means requires a guess of how many clusters ($k$) to form, we obtain the clustering results from $k=2$ to $k=30$; (2) after clustering the domain into multiple sub-domains, we consider a sensor placed at the medoid of each sub-domain; (3) we compare the reconstructed strain field to the original strain field using mean squared error (MSE). We will first present the code for the tutorial, then we will discuss the outputs and results. The full code is found in ``tutorials/ensemble_clustering_sensors_placement.py``, and the results are in ``tutorials/files/example_data/homogeneous_NH_results``.
 
 ```python3
 import numpy as np
@@ -290,6 +293,23 @@ np.save('files/example_data/cluster_results_list.npy',cluster_results_list)
 np.save('files/example_data/features_all.npy',features_all)
 np.save('files/example_data/feature_compressed_list.npy',feature_compressed_list)
 ```
+
+In this, we run multiple loops of our clustering pipeline, increasing the number of clusters $k$ between loop. The for loop will run from ``k=2`` to ``k=highest_k``, where ``highest_k`` is the highest value of k predetermined by the user. The goal is to observe the similarity between the reconstructed strain field and the original strain field as $k$ increases.
+
+### Output
+
+For the problem of identifying self-similar sub-domains, we have the following outputs:
+- To understand the shapes of the arrays in the remainder of this section, note that: q is the number of pre-assigned k clusters; m is the number of boundary conditions; n is the number of grid markers; p is the number of final clusters; and dim is the dimensions of the features in use (e.g., strain has 4 components so dim=4).
+- ``cluster_results``: the clustering results for the individual boundary conditions, with shape of q by m by n. The values of the array correspond to the label of the markers. This array is stored as ``cluster_results_list.npy``.
+- ``ensemble_label``: the clustering result for the ensemble, obtain after the segmentation by position step. The array has the shape q by n. This array is stored as ``ensemble_label_list.npy``.
+- ``medoids_ind_list``: the indices (correspond to the array ``points_sel``) of the medoids for the clusters in ``ensemble_label``. Each cluster has 1 medoid. The array has the shape q by p. The list of medoids is stored as ``medoids_ind_list.npy``.
+- ``features_compressed_list``: The compressed features for all the boundary conditions. For each cluster, the compressed features are obtained by replacing the features of the medoid with all the markers in the cluster. The array has a shape q by m by n by dim. This array is stored as ``feature_compressed_list.npy``.
+- ``MSE_vs_k_features``: the mean squared value between the ``features_compressed_all`` and the ``features_all`` for each pre-assigned k clusters. The array has a shape q by m. The MSE value compares the reconstructed strain field to the original strain field. This array is stored as ``MSE_vs_k_features.npy``.
+- ``num_sensors``: While we provide an initial guess of the number of clusters ($k$), the final clustering results tend to have more clusters due to segmentation. Here, we provide the number of sensors for $k=30$ for each boundary condition. With this information, we can plot MSE (from ``MSE_vs_k_features``) vs. number of sensors and observe the convergence.
+
+### Results
+
+
 
 ## Under construction
 - ``medoids_ind``: the indices (``points_sel``) of the medoids for the clusters in ``ensemble_label``. Each cluster has 1 medoid.
