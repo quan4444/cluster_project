@@ -16,12 +16,11 @@
 
 ## Project Background and Summary <a name="summary"></a>
 
-The goal of this project is to cluster a domain into several sub-domains using the mechanical and positional information available. Broadly speaking, a domain can represent many physical world objects, such as a sample of soft tissue or soft robot. We developed a clustering pipeline with 2 main applications in mind:
+The goal of this project is to cluster a domain into several sub-domains using the mechanical and positional information available. To learn more details about this project, please check out our full paper here (link). Broadly speaking, a domain can represent many physical world objects, such as a sample of soft tissue or soft robot. We developed a clustering pipeline with 2 main applications in mind:
 - Clustering a heterogeneous soft tissue into mechanically homogeneous sub-domains.
 - Clustering a homogeneous domain representing a soft robot into self-similar sub-domains (i.e., the strain values within a sub-domain are similar) for sensor placement.
-Before explaining the full pipeline, we will introduce some concepts as background. Readers familiar with continuum mechanics and unsupervised machine learning can skip the rest of this section.
 
-To learn more details about this project, please check out our full paper here. (link)
+Before explaining the full pipeline, we will introduce some concepts as background. Readers familiar with continuum mechanics and unsupervised machine learning can skip the rest of this section.
 
 ### Markers on Domain
 
@@ -83,7 +82,7 @@ From `Calculate kinematics features for each set of markers`, we will obtain the
 
 ## Tutorials: Identifying sub-domains within a heterogeneous domain <a name="tutorial1"></a>
 
-This GitHub repository contains a folder called ``tutorials`` that contains two examples, one for running the clustering pipeline on the heterogeneous samples to identify the different material sub-domains, and one for running the clustering pipeline on the homogeneous sample for sensor placement. For starter, we will identify the sub-domains for a heterogeneous domain. To run the tutorials, change your current working directory to the ``tutorials`` folder. The outputs of the tutorials are stored inside the folders in ``tutorials/files/example_data/`` with names ending in ``'_results'``. The details of the outputs are discussed below.
+This GitHub repository contains a folder called ``tutorials`` that contains two examples: (1) for running the clustering pipeline on the heterogeneous samples to identify the different material sub-domains, and (2) for running the clustering pipeline on the homogeneous sample for sensor placement. For starter, we will *identify the sub-domains for a heterogeneous domain*. To run the tutorials, change your current working directory to the ``tutorials`` folder. The outputs of the tutorials are stored inside the folders in ``tutorials/files/example_data/`` with names ending in ``'_results'``. The details of the outputs are discussed below.
 
 ### Preparing data for analysis
 
@@ -213,7 +212,7 @@ First, the ground truth provides a baseline for us to compare our subsequent clu
 
 ## Tutorials: Clustering a homogeneous domain into self-similar sub-domains for sensor placement <a name="tutorial2"></a>
 
-For this tutorials, we will cluster a homogeneous domain undergoing different boundary conditions into self-similar sub-domains for sensor placement suggestions. Here, self-similar sub-domains are sub-domains that contain markers with similar strain value. The process for obtaining the final clustering result is similar to the previous tutorials, with one main distinction: After clustering the domain into multiple sub-domains, we consider a sensor placed at the medoid of each sub-domain. Here, we will present the code for the tutorial, then we will discuss the outputs and results.
+For this tutorials, we will cluster a homogeneous domain undergoing different boundary conditions into self-similar sub-domains for sensor placement suggestions. Here, self-similar sub-domains are sub-domains that contain markers with similar strain value. The process for obtaining the final clustering result is similar to the previous tutorials, with one main distinction: After clustering the domain into multiple sub-domains, we consider a sensor placed at the medoid of each sub-domain. We will first present the code for the tutorial, then we will discuss the outputs and results. The full code is found in ``tutorials/ensemble_clustering_sensors_placement.py``, and the results are in ``tutorials/files/example_data/homogeneous_NH_results``.
 
 ```python3
 import numpy as np
