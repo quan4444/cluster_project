@@ -7,12 +7,17 @@
 [![tests](https://github.com/elejeune11/microbundlecompute-lite/workflows/tests/badge.svg)](https://github.com/quan4444/cluster_project/actions)
 [![codecov](https://codecov.io/gh/quan4444/cluster_project/branch/master/graph/badge.svg?token=W3LXJTOCY8)](https://codecov.io/gh/quan4444/cluster_project)
 
+
 ## Table of contents
 
 * [Project Background and Summary](#summary)
 * [Project Pipeline](#pipeline)
+* [Installation Instructions](#install)
 * [Tutorials: Identifying sub-domains within a heterogeneous domain](#tutorial1)
 * [Tutorials: Clustering a homogeneous domain into self-similar sub-domains for sensor placement](#tutorial2)
+* [References to Related Work](#references)
+* [Contact Information](#contact)
+* [Acknowledgements](#acknowledge)
 
 ## Project Background and Summary <a name="summary"></a>
 
@@ -68,6 +73,7 @@ where $a$ is the number of pairs of markers in the same set for both $X$ and $Y$
 
 In many applications, we cannot determine the correctness of our unsupervised learning methods. However, we might be able to obtain different clustering results via different methods or via different scenarios, then we aggregate the different clustering results to retrieve the final consensus clustering result using [Ensemble Clustering](https://en.wikipedia.org/wiki/Consensus_clustering).
 
+
 ## Project Pipeline <a name="pipeline"></a>
 
 The general pipeline is as follow:
@@ -82,6 +88,51 @@ From `Calculate kinematics features for each set of markers`, we will obtain the
 
 <p align = "center">
 <img alt="clustering_pipeline" src="tutorials/figs_for_github/minimalist_pipeline.png" width="85%" />
+
+
+## Installation Instructions <a name="install"></a>
+
+### Get a copy of the cluster project repository on your local machine
+
+The best way to do this is to create a GitHub account and ``clone`` the repository. However, you can also download the repository by clicking the green ``Code`` button and selecting ``Download ZIP``. Download and unzip the ``cluster_project`` folder and place it in a convenient location on your computer.
+
+### Create and activate a conda virtual environment
+
+1. Install [Anaconda](https://docs.anaconda.com/anaconda/install/) on your local machine.
+2. Open a ``Terminal`` session (or equivalent) -- note that Mac computers come with ``Terminal`` pre-installed (type ``⌘-space`` and then search for ``Terminal``).
+3. Type in the terminal to create a virtual environment with conda:
+```bash
+conda create --name cluster_project python=3.9.5
+```
+4. Type in the terminal to activate your virtual environment:
+```bash
+conda activate cluster_project
+```
+5. Check to make sure that the correct version of python is running (should be ``3.9.5``)
+```bash
+python --version
+```
+6. Update some base modules (just in case)
+```bash
+pip install --upgrade pip setuptools wheel
+```
+
+Note that once you have created this virtual environment you can ``activate`` and ``deactivate`` it in the future -- it is not necessary to create a new virtual environment each time you want to run this code, you can simply type ``conda activate cluster_project`` and then pick up where you left off (see also: [conda cheat sheet](https://docs.conda.io/projects/conda/en/4.6.0/_downloads/52a95608c49671267e40c689e0bc00ca/conda-cheatsheet.pdf)).
+
+### Install cluster project
+
+1. Use a ``Terminal`` session to navigate to the ``cluster_project`` folder (i.e., change your working directory). The command ``cd`` will allow you to do this (see: [terminal cheat sheet](https://terminalcheatsheet.com/))
+2. Type the command ``ls`` and make sure that the file ``pyproject.toml`` is in the current directory.
+3. Now, create an editable install of microbundle compute:
+```bash
+pip install -e .
+```
+4. If you would like to see what packages this has installed, you can type ``pip list``
+5. You can test that the code is working with pytest (all tests should pass):
+```bash
+pytest -v --cov=cluster_project  --cov-report term-missing
+```
+6. To run the code from the terminal, simply start python (type ``python``) and then type ``from cluster_project import kinematics as kn``.
 
 ## Tutorials: Identifying sub-domains within a heterogeneous domain <a name="tutorial1"></a>
 
@@ -160,7 +211,7 @@ num_neigh=40
 u_mat_list,grad_u_list,strain_list,I_strain_list,F_list,I_F_list,C_list,I_C_list,b_list,I_b_list = kn.get_kinematics_multiple(pt_loc_all,u_mat_all,points_sel,num_neigh)
 ```
 
-#### Clustering the domain
+#### Clustering the domain / Outputs
 
 First, we select the feature we want to use for clustering (e.g., ``features_all = I_C_list``). The function ``cluster_full_pipelines`` will take in ``features_all``, the number of clusters ``k``, and the grid markers ``points_sel``, and will output the clustering results and other variables useful for analysis, which will be discussed below. The outputs for this tutorial are stored in ``tutorials/files/example_data/circle_inclusion_NH_results``.
 - ``cluster_results``: the clustering results for the individual boundary conditions, with shape of m by n, where m is the number of boundary conditions, and n the number of grid markers. The values of the array correspond to the label of the markers. This array is stored as ``individual_bcs_cluser_results.npy``.
@@ -296,7 +347,7 @@ np.save('files/example_data/feature_compressed_list.npy',feature_compressed_list
 
 In this, we run multiple loops of our clustering pipeline, increasing the number of clusters $k$ between loop. The for loop will run from ``k=2`` to ``k=highest_k``, where ``highest_k`` is the highest value of k predetermined by the user. The goal is to observe the similarity between the reconstructed strain field and the original strain field as $k$ increases.
 
-### Output
+### Outputs
 
 For the problem of identifying self-similar sub-domains, we have the following outputs:
 - To understand the shapes of the arrays in the remainder of this section, note that: q is the number of pre-assigned k clusters; m is the number of boundary conditions; n is the number of grid markers; p is the number of final clusters; and dim is the dimensions of the features in use (e.g., strain has 4 components so dim=4).
@@ -307,12 +358,15 @@ For the problem of identifying self-similar sub-domains, we have the following o
 - ``MSE_vs_k_features``: the mean squared value between the ``features_compressed_all`` and the ``features_all`` for each pre-assigned k clusters. The array has a shape q by m. The MSE value compares the reconstructed strain field to the original strain field. This array is stored as ``MSE_vs_k_features.npy``.
 - ``num_sensors``: While we provide an initial guess of the number of clusters ($k$), the final clustering results tend to have more clusters due to segmentation. Here, we provide the number of sensors for $k=30$ for each boundary condition. With this information, we can plot MSE (from ``MSE_vs_k_features``) vs. number of sensors and observe the convergence.
 
-### Results
+## References to Related Work <a name="references"></a>
 
+Related work can be found here:
+* TBD
 
+## Contact Information <a name="contact"></a>
 
-## Under construction
-- ``medoids_ind``: the indices (``points_sel``) of the medoids for the clusters in ``ensemble_label``. Each cluster has 1 medoid.
-- ``features_compressed_all`: The compressed features for all the boundary conditions. For each cluster, the compressed features are obtained by replacing the features of the medoid with all the markers in the cluster. The array has a shape m by n by dim, where m is the number of boundary conditions, n the number of grid markers, and dim the dimensions of the features.
-- ``MSE_all``: the mean squared value between the ``features_compressed_all`` and the ``features_all``. The array has a shape m by 1, which each value corresponds to the MSE between the compressed features and the actual features for a set of boundary conditions constraints.
-In the example below, we run multiple loops of our clustering pipeline, increasing the number of clusters ``k`` between loop. The for loop will run from ``k=2`` to ``k=highest_k``, where ``highest_k`` is the highest value of k predetermined by the user. The goal is to find the *convergence* numbers of clusters ``k``. We store the data in an array for plotting later.
+For additional information, please contact Emma Lejeune ``elejeune@bu.edu`` or Quan Nguyen ``quan@bu.edu``.
+
+## Acknowledgements <a name="acknowledge"></a>
+
+Thank you ... **Under Construction**
