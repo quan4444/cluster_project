@@ -21,14 +21,16 @@
 
 ## Project Background and Summary <a name="summary"></a>
 
+From biological systems to engineered soft robots, highly deformable materials are ubiquitous. And, analyzing the mechanical behavior of common soft material natural and engineered systems poses both unique challenge and opportunity. 
+
+<p align = "center">
+<img alt="big_big_overview" src="tutorials/figs_for_github/big_big_overview.png" width="50%" />
+
 The goal of this project is to cluster a domain into several sub-domains using the mechanical and positional information available. To learn more details about this project, please check out our full paper here (link). Broadly speaking, a domain can represent many physical world objects, such as a sample of soft tissue or soft robot. We developed a clustering pipeline with 2 main applications in mind:
 - Clustering a heterogeneous soft tissue into mechanically homogeneous sub-domains.
 - Clustering a homogeneous domain representing a soft robot into self-similar sub-domains (i.e., the strain values within a sub-domain are similar) for sensor placement.
 
 Before explaining the full pipeline, we will introduce some concepts as background. Readers familiar with continuum mechanics and unsupervised machine learning can skip the rest of this section.
-
-<p align = "center">
-<img alt="big_big_overview" src="tutorials/figs_for_github/big_big_overview.png" width="50%" />
 
 ### Markers on Domain
 
@@ -71,8 +73,11 @@ where $a$ is the number of pairs of markers in the same set for both $X$ and $Y$
 
 ### Ensemble Clustering
 
-In many applications, we cannot determine the correctness of our unsupervised learning methods. However, we might be able to obtain different clustering results via different methods or via different scenarios, then we aggregate the different clustering results to retrieve the final consensus clustering result using [Ensemble Clustering](https://en.wikipedia.org/wiki/Consensus_clustering).
+In many applications, we cannot determine the correctness of our unsupervised learning methods. However, we might be able to obtain different clustering results via different methods or via different scenarios, then we aggregate the different clustering results to retrieve the final consensus clustering result using [Ensemble Clustering](https://en.wikipedia.org/wiki/Consensus_clustering). Here, we select the ensemble clustering method called [Cluster-based Similarity Partitioning Algorithm (CSPA)](http://strehl.com/diss/node80.html). Briefly, the method works by aggregating multiple sets of clustering result into a [hypergraph](http://strehl.com/diss/node79.html), then we can obtain the final clustering result by partitioning the hypergraph using any reasonable similariy based clustering algorithm, such as Spectral Clustering.
 
+### Reconstructed Strain Field
+
+Given a strain field, we cluster the domain into multiple sub-domains, and consider a sensor placed at the medoid of each sub-domain. Then, we define the reconstructed strain field as follow: for each cluster inside the domain, we replace the strain values of the markers in the cluster with the strain values at the position of the sensor (i.e., the positional medoid).
 
 ## Project Pipeline <a name="pipeline"></a>
 
@@ -91,6 +96,8 @@ From `Calculate kinematics features for each set of markers`, we will obtain the
 
 
 ## Installation Instructions <a name="install"></a>
+
+**UNDER CONSTRUCTION - NEED TO MAKE SURE INSTALLATION WORKS ON LOCAL PC**
 
 ### Get a copy of the cluster project repository on your local machine
 
@@ -211,7 +218,7 @@ num_neigh=40
 u_mat_list,grad_u_list,strain_list,I_strain_list,F_list,I_F_list,C_list,I_C_list,b_list,I_b_list = kn.get_kinematics_multiple(pt_loc_all,u_mat_all,points_sel,num_neigh)
 ```
 
-#### Clustering the domain / Outputs
+#### Clustering the domain / Clustering outputs
 
 First, we select the feature we want to use for clustering (e.g., ``features_all = I_C_list``). The function ``cluster_full_pipelines`` will take in ``features_all``, the number of clusters ``k``, and the grid markers ``points_sel``, and will output the clustering results and other variables useful for analysis, which will be discussed below. The outputs for this tutorial are stored in ``tutorials/files/example_data/circle_inclusion_NH_results``.
 - ``cluster_results``: the clustering results for the individual boundary conditions, with shape of m by n, where m is the number of boundary conditions, and n the number of grid markers. The values of the array correspond to the label of the markers. This array is stored as ``individual_bcs_cluser_results.npy``.
@@ -347,7 +354,7 @@ np.save('files/example_data/feature_compressed_list.npy',feature_compressed_list
 
 In this, we run multiple loops of our clustering pipeline, increasing the number of clusters $k$ between loop. The for loop will run from ``k=2`` to ``k=highest_k``, where ``highest_k`` is the highest value of k predetermined by the user. The goal is to observe the similarity between the reconstructed strain field and the original strain field as $k$ increases.
 
-### Outputs
+### Clustering outputs
 
 For the problem of identifying self-similar sub-domains, we have the following outputs:
 - To understand the shapes of the arrays in the remainder of this section, note that: q is the number of pre-assigned k clusters; m is the number of boundary conditions; n is the number of grid markers; p is the number of final clusters; and dim is the dimensions of the features in use (e.g., strain has 4 components so dim=4).
@@ -357,6 +364,15 @@ For the problem of identifying self-similar sub-domains, we have the following o
 - ``features_compressed_list``: The compressed features for all the boundary conditions. For each cluster, the compressed features are obtained by replacing the features of the medoid with all the markers in the cluster. The array has a shape q by m by n by dim. This array is stored as ``feature_compressed_list.npy``.
 - ``MSE_vs_k_features``: the mean squared value between the ``features_compressed_all`` and the ``features_all`` for each pre-assigned k clusters. The array has a shape q by m. The MSE value compares the reconstructed strain field to the original strain field. This array is stored as ``MSE_vs_k_features.npy``.
 - ``num_sensors``: While we provide an initial guess of the number of clusters ($k$), the final clustering results tend to have more clusters due to segmentation. Here, we provide the number of sensors for $k=30$ for each boundary condition. With this information, we can plot MSE (from ``MSE_vs_k_features``) vs. number of sensors and observe the convergence.
+
+### Results
+
+In the figure below, we obtain (a) by plotting ``num_sensors`` on the x-axis, and ``MSE_vs_k_features[:,1]`` (MSE values as $k$ increases for the uniaxial extension in the y-direction case) on the y-axis. Then, we show the Finite Element simulation result in (b-ii), the k-means clustering results for the corresponding boundary condition in (b-ii), and the reconstructed strain field in (b-iii). Similarly, we show the results for the ensemble clustering case with 4 boundary conditions in (c).
+
+<p align = "center">
+<img alt="MSEvnumsensors" src="tutorials/figs_for_github/MSEvnumsensors.png" width="65%" />
+
+In (a), we compare the reconstructed strain field to the original strain field using mean squared error (MSE), where we take the average squared difference between the reconstructed strain and the original strain for all markers. We anticipate that as the number of sensors increases, the resulting MSE will decrease. Intuitively, this is because as the number of clusters increases, the clusters will become smaller, and the medoid of each cluster will have a closer strain value to all other markers in the cluster, and the reconstructed strain field will become more similar to the original strain field. The MSE for the single loading case shows a clearly decreasing trend as we expected. For the ensemble reconstructed strain, we observe a similar relationship between the number of sensors and the MSE. However, the single loading case converged at a lower MSE compared to the ensemble. Since the error is only evaluated on one load case (i.e., uniaxial extension in the y-direction), the result favors the single load case example. Despite the higher MSE for the ensemble, we believe that the ensemble clustering pipeline will provide more generalizable sensors placements suggestion. 
 
 ## References to Related Work <a name="references"></a>
 
