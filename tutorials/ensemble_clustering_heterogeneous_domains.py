@@ -7,14 +7,26 @@ length_samp = 1
 
 # load markers positions and displacements
 
+# # circle inclusion / neo-hookean
+# disp_path = 'files/example_data/circle_inclusion_NH'
+# pt_loc_files = np.array(['pt_sssc_equi_disp0.4.npy','pt_sssc_uni_y_disp0.4.npy',\
+#                         'pt_sssc_uni_x_disp0.4.npy','pt_sssc_shear_0.4.npy',\
+#                         'pt_sssc_comp_0.2.npy'])
+# u_mat_files = np.array(['disp_sssc_equi_disp0.4.npy','disp_sssc_uni_y_disp0.4.npy',\
+# 						'disp_sssc_uni_x_disp0.4.npy','disp_sssc_shear_0.4.npy',\
+# 						'disp_sssc_comp_0.2.npy'])
+# pt_loc_all,u_mat_all = kn.load_multiple(disp_path,pt_loc_files,u_mat_files)
+# disp_type = np.array(['equibiaxial','uniaxial y','uniaxial x','shear','confined compression'])
+# domain_type = 'circle_inclusion' # necessary for obtaining ground truth / ARI
+
 # circle inclusion / neo-hookean
 disp_path = 'files/example_data/circle_inclusion_NH'
-pt_loc_files = np.array(['pt_sssc_equi_disp0.4.npy','pt_sssc_uni_y_disp0.4.npy',\
-                        'pt_sssc_uni_x_disp0.4.npy','pt_sssc_shear_0.4.npy',\
-                        'pt_sssc_comp_0.2.npy'])
-u_mat_files = np.array(['disp_sssc_equi_disp0.4.npy','disp_sssc_uni_y_disp0.4.npy',\
-						'disp_sssc_uni_x_disp0.4.npy','disp_sssc_shear_0.4.npy',\
-						'disp_sssc_comp_0.2.npy'])
+pt_loc_files = np.array(['pt_sssc_equi_disp0.4.txt','pt_sssc_uni_y_disp0.4.txt',\
+                        'pt_sssc_uni_x_disp0.4.txt','pt_sssc_shear_0.4.txt',\
+                        'pt_sssc_comp_0.2.txt'])
+u_mat_files = np.array(['disp_sssc_equi_disp0.4.txt','disp_sssc_uni_y_disp0.4.txt',\
+						'disp_sssc_uni_x_disp0.4.txt','disp_sssc_shear_0.4.txt',\
+						'disp_sssc_comp_0.2.txt'])
 pt_loc_all,u_mat_all = kn.load_multiple(disp_path,pt_loc_files,u_mat_files)
 disp_type = np.array(['equibiaxial','uniaxial y','uniaxial x','shear','confined compression'])
 domain_type = 'circle_inclusion' # necessary for obtaining ground truth / ARI

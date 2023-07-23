@@ -5,9 +5,12 @@ import os
 
 def load_pt_disp(path,pt_loc_filename,u_mat_filename,markers_len=1000):
     '''Load in positions and displacements of markers, given path and file.'''
-
-    pt_loc = np.load(os.path.join(path,pt_loc_filename))[:markers_len,0:2]
-    u_mat = np.load(os.path.join(path,u_mat_filename))[:markers_len,0:2]
+    try:
+        pt_loc = np.load(os.path.join(path,pt_loc_filename))[:markers_len,0:2]
+        u_mat = np.load(os.path.join(path,u_mat_filename))[:markers_len,0:2]
+    except:
+        pt_loc = np.loadtxt(os.path.join(path,pt_loc_filename))[:markers_len,0:2]
+        u_mat = np.loadtxt(os.path.join(path,u_mat_filename))[:markers_len,0:2]
     return pt_loc,u_mat
 
 def load_multiple(path,pt_filenames,u_filenames,markers_len=1000):
