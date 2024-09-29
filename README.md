@@ -17,7 +17,6 @@
 * [Tutorials: Clustering a homogeneous domain into self-similar sub-domains for sensor placement](#tutorial2)
 * [References to Related Work](#references)
 * [Contact Information](#contact)
-* [Acknowledgements](#acknowledge)
 
 ## Project Background and Summary <a name="summary"></a>
 
@@ -376,13 +375,19 @@ In (a), we compare the reconstructed strain field to the original strain field u
 
 ## References to Related Work <a name="references"></a>
 
-Related work can be found here:
-* TBD
+```
+@article{nguyen2024segmenting,
+author = {Nguyen, Quan and Lejeune, Emma},doi = {10.1007/s10237-023-01779-2},
+journal = {Biomechanics and Modeling in Mechanobiology},
+month = feb,
+number = {1},
+pages = {349--372},
+title = {{Segmenting mechanically heterogeneous domains via unsupervised learning}},
+url = {(https://link.springer.com/article/10.1007/s10237-023-01779-2)},
+volume = {23},
+year = {2024}}
+```
 
 ## Contact Information <a name="contact"></a>
 
 For additional information, please contact Emma Lejeune ``elejeune@bu.edu`` or Quan Nguyen ``quan@bu.edu``.
-
-## Acknowledgements <a name="acknowledge"></a>
-
-Thank you ... **Under Construction**
